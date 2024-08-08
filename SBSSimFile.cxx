@@ -16,8 +16,6 @@
 #include "THaApparatus.h"
 #include "SBSSimFile.h"
 #include "SBSSimEvent.h"
-#include "SBSBBShower.h"
-#include "SBSBBTotalShower.h"
 //#include "evio.h"     // for S_SUCCESS
 // We really only need S_SUCCESS from evio.h, so why not just define
 // it ourselves so we don't have to pull the whole header file.

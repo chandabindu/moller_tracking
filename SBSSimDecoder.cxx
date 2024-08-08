@@ -27,8 +27,6 @@
 #include "THaVarList.h"
 #include "THaDetMap.h"
 #include "THaDetector.h"
-#include "SBSBBShower.h"
-#include "SBSBBTotalShower.h"
 #include "THaCrateMap.h"
 #include "Textvars.h"
 //#include "THaAnalysisObject.h"
@@ -1436,24 +1434,13 @@ void SBSSimDecoder::SetDetectors()
     while( (det=(TObject*)diter()) ){
       cout << "Setting det " << app->GetName() << "." << det->GetName() 
 	   << " into SBSSimDecoder" << endl;
-      if(strcmp(app->GetDetector(det->GetName())->GetClassName(),"SBSBBTotalShower")==0){
-	SBSBBTotalShower* TS = (SBSBBTotalShower*)app->GetDetector(det->GetName());
-	// AddDetector(Form("%s.%s",app->GetName(), TS->GetShower()->GetName()), 
-	// 	    (app->GetDetector(det->GetName()))->GetInitDate());
-	// AddDetector(Form("%s.%s",app->GetName(), TS->GetPreShower()->GetName()), 
-	// 	    (app->GetDetector(det->GetName()))->GetInitDate());
-
-	AddDetector(Form("%s.%s",app->GetName(), TS->GetShower()->GetName()), 
-		    rundate);
-	AddDetector(Form("%s.%s",app->GetName(), TS->GetPreShower()->GetName()), 
-		    rundate);
-       }else{
+       
 	// AddDetector(Form("%s.%s",app->GetName(), det->GetName()), 
 	// 	    (app->GetDetector(det->GetName()))->GetInitDate());
 
 	AddDetector(Form("%s.%s",app->GetName(), det->GetName()), 
 		    rundate);
-      }
+      
     }
   }
 }

@@ -50,12 +50,12 @@ endif()
 
 ##----------------------------------------------------------------------------
 ## Set the sources which have a corresponding .h file here
-set(sources MPDModule.cxx MPDModuleVMEv4.cxx SBSBigBite.cxx
+set(sources MPDModule.cxx SBSBigBite.cxx
   SBSGEMTrackerBase.cxx SBSGEMSpectrometerTracker.cxx SBSGEMModule.cxx
-  SBSCDet.cxx SBSScintHit.cxx SBSScintPMT.cxx 
+  SBSScintHit.cxx SBSScintPMT.cxx 
   SBSTimingHodoscope.cxx SBSScintBar.cxx SBSTdcHit.cxx SBSAdcHit.cxx
-  SBSScintPartialHit.cxx SBSCherenkovDetector.cxx SBSCherenkov_ClusterList.cxx
-  SBSScintPlane.cxx SBSEArm.cxx
+  SBSScintPartialHit.cxx 
+  SBSScintPlane.cxx 
   SBSDecodeF1TDCModule.cxx SBSCalorimeter.cxx SBSGenericDetector.cxx
   SBSData.cxx SBSElement.cxx
   SBSCalorimeterCluster.cxx SBSSimDataDecoder.cxx 
