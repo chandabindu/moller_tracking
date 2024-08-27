@@ -7,7 +7,7 @@
 class THaRunBase;
 class THaApparatus;
 class THaEvData;
-class SBSGEMPlane;
+//class SBSGEMPlane;
 class THaCrateMap;
 class THaTrack;
 class TClonesArray;

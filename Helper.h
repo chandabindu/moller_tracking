@@ -1,5 +1,5 @@
-#ifndef SBS_Offline_Helper_h
-#define SBS_Offline_Helper_h
+#ifndef MOLLER_Helper_h
+#define MOLLER_Helper_h
 
 ///////////////////////////////////////////////////////////////////////////////
 //                                                                           //

@@ -20,8 +20,10 @@ class TClonesArray;
 
 namespace SBSGEM {
   enum GEMaxis_t { kUaxis=0, kVaxis };
-  enum APVmap_t { kINFN=0, kUVA_XY, kUVA_UV, kMC };
+  enum APVmap_t { kINFN=0, kUVA_XY, kUVA_UV, kUVA_MOLLER, kMC };
 }
+
+constexpr int g_skip_channel[] = {0, 1, 2, 3, 4, 5, 6};
 
 struct mpdmap_t {
   UInt_t crate;
@@ -252,17 +254,17 @@ class SBSGEMModule : public THaSubDetector {
   
   SBSGEM::APVmap_t fAPVmapping; //choose APV channel --> strip mapping; there are only three possible values supported for now (see SBSGEM::APVmap_t)
 
-  std::array<std::vector<UInt_t>, 4 > APVMAP;
+  std::array<std::vector<UInt_t>, 5 > APVMAP;
 
   void InitAPVMAP();
   
   //some convenience maps: are these actually used yet? 
-  std::map<Int_t, Int_t> fAPVch_by_Ustrip;
+  /*std::map<Int_t, Int_t> fAPVch_by_Ustrip;
   std::map<Int_t, Int_t> fAPVch_by_Vstrip;
   std::map<Int_t, Int_t> fMPDID_by_Ustrip;
   std::map<Int_t, Int_t> fMPDID_by_Vstrip;
   std::map<Int_t, Int_t> fADCch_by_Ustrip;
-  std::map<Int_t, Int_t> fADCch_by_Vstrip;
+  std::map<Int_t, Int_t> fADCch_by_Vstrip;*/
 
   //Bool_t firstevent=
   //////////// MPD Time Stamp Info: //////////////////////////////////
@@ -367,6 +369,7 @@ class SBSGEMModule : public THaSubDetector {
   // Double_t/Double_t is four bytes/eight bytes
 
   UChar_t fN_APV25_CHAN;     //number of APV25 channels, default 128
+  UInt_t effN_APV25_CHAN;     //effective number of APV25 channels, default 128
   UChar_t fN_MPD_TIME_SAMP;  //number of MPD time samples, default = 6
   UShort_t fMPDMAP_ROW_SIZE; //MPDMAP_ROW_SIZE: default = 9, let's not hardcode
   UShort_t fNumberOfChannelInFrame; //default 128, not clear if this is used: This might not be constant, in fact

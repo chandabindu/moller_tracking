@@ -1,9 +1,9 @@
 #!/bin/sh
 
-#script to set up the environment for SBS-offline
-export SBS=${CMAKE_INSTALL_PREFIX}
-export SBSOFFLINE=${CMAKE_INSTALL_PREFIX}
-#export SBS_REPLAY=${SBS_REPLAY_PATH}
+#script to set up the environment for MOLLER-offline
+export MOLLER=${CMAKE_INSTALL_PREFIX}
+export MOLLEROFFLINE=${CMAKE_INSTALL_PREFIX}
+#export MOLLER_REPLAY=${MOLLER_REPLAY_PATH}
 
 if test "x$PATH" = "x" ; then
     export PATH=${CMAKE_INSTALL_FULL_BINDIR}

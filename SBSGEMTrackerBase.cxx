@@ -552,7 +552,7 @@ void SBSGEMTrackerBase::LoadPedestals( const char *fname ){
 	
 	int apvchan;
 	double mean, rms;
-	//for( UInt_t i=0; i<128; i++ ){
+	//for( UInt_t i=0; i<128; i++ ){}
 	is >> apvchan >> mean >> rms;
 	//std::cout << "apvchan, mean, rms = " << apvchan << ", " << mean << ", " << rms << std::endl;
 	PedMean[crate][slot][index].push_back( mean );
@@ -584,17 +584,21 @@ void SBSGEMTrackerBase::LoadPedestals( const char *fname ){
 	  //std::cout << "found slot " << this_slot << std::endl;
 	  if( PedMean[this_crate][this_slot].find( this_index ) != PedMean[this_crate][this_slot].end() ){
 	    //std::cout << "found index " << this_index << std::endl;
-	    
-	    for( int i=0; i<128; i++ ){
+	    int eff_ch=128;
+	    //SBSGEM::APVmap_t testmap = fModules[module]
+	    //if(fModules[module]->fAPVmapping == SBSGEM::kUVA_MOLLER) eff_ch=121;
+	    //else eff_ch=128;
+	    //std::cout<<__func__<<"  fAPVmapping  "<<SBSGEM::fAPVmapping <<"  eff_ch  ="<<eff_ch <<std::endl; 
+	    for( int i=0; i<eff_ch; i++ ){
 	      int this_apvchan = APVChan[this_crate][this_slot][this_index][i];
 	      double this_mean = PedMean[this_crate][this_slot][this_index][i];
 	      double this_rms = PedRMS[this_crate][this_slot][this_index][i];
 	      
 	      int this_strip = fModules[module]->GetStripNumber( this_apvchan, it->pos, it->invert );
 
-	      // std::cout << "axis, strip index, ped. mean, ped. rms = "
-	      // 		<< it->axis << ", " << this_strip << ", " << this_mean << ", " << this_rms
-	      // 		<< std::endl;
+	      //std::cout << "axis, strip index, ped. mean, ped. rms = "
+	       	//	<< it->axis << ", " << this_strip << ", " << this_mean << ", " << this_rms
+	       	//	<< std::endl;
 	      
 	      if ( it->axis == SBSGEM::kUaxis ){
 		fModules[module]->fPedestalU[this_strip] = this_mean;
@@ -612,7 +616,7 @@ void SBSGEMTrackerBase::LoadPedestals( const char *fname ){
     }
   }
 
-  
+std::cout<<"Pedestals are loaded successfully" << std::endl;  
   
 }
 
@@ -708,6 +712,7 @@ void SBSGEMTrackerBase::LoadCM( const char *fname ){
     }
   }
   
+std::cout<<"CMs are loaded successfully" << std::endl;  
 }
 
 void SBSGEMTrackerBase::InitEfficiencyHistos(const char *dname){

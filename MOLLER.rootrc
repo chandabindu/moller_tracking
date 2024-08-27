@@ -2,7 +2,7 @@
 Rint.Logon        ${CMAKE_INSTALL_FULL_SYSCONFDIR}/rootlogon.C
 
 Unix.*.Root.DynamicPath:   .:${CMAKE_INSTALL_LIBDIR}:$(ROOTSYS)/lib
-Unix.*.Root.MacroPath:     ${SBS_MACRO_PATH}:$(ROOTSYS)/macros
+Unix.*.Root.MacroPath:     ${MOLLER_MACRO_PATH}:$(ROOTSYS)/macros
 
 ACLiC.IncludePaths:       -I${CMAKE_INSTALL_INCLUDEDIR}
 

@@ -36,7 +36,7 @@ void rootlogon(){
   //gSystem->AddIncludePath(" -I${CMAKE_INSTALL_PREFIX}/include");
   gSystem->AddIncludePath(" -I${CMAKE_INSTALL_FULL_INCLUDEDIR}");
 
-  TString libname = "${CMAKE_INSTALL_FULL_LIBDIR}/libsbs.so";
+  TString libname = "${CMAKE_INSTALL_FULL_LIBDIR}/libmoller.so";
 
   SysInfo_t sysinfo;
   gSystem->GetSysInfo( &sysinfo );

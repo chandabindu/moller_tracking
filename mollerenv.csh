@@ -1,8 +1,8 @@
 #!/bin/csh
 
-#script to set up the environment for SBS-offline
-setenv SBS @CMAKE_INSTALL_PREFIX@
-#setenv SBS_REPLAY @SBS_REPLAY_PATH@
+#script to set up the environment for MOLLER-offline
+setenv MOLLER @CMAKE_INSTALL_PREFIX@
+#setenv MOLLER_REPLAY @MOLLER_REPLAY_PATH@
 
 if( ! ${?PATH} ) then
     setenv PATH @CMAKE_INSTALL_FULL_BINDIR@
