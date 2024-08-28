@@ -1,24 +1,24 @@
-#ifndef SBSGEMSPECTROMETERTRACKER_H
-#define SBSGEMSPECTROMETERTRACKER_H 1
+#ifndef MOLLERGEMSPECTROMETERTRACKER_H
+#define MOLLERGEMSPECTROMETERTRACKER_H 1
 #include <vector>
 #include <THaTrackingDetector.h>
-#include "SBSGEMTrackerBase.h"
+#include "MOLLERGEMTrackerBase.h"
 
 class THaRunBase;
 class THaApparatus;
 class THaEvData;
-//class SBSGEMPlane;
+//class MOLLERGEMPlane;
 class THaCrateMap;
 class THaTrack;
 class TClonesArray;
 //class THaSpectrometer;
 
-class SBSGEMSpectrometerTracker : public THaTrackingDetector, public SBSGEMTrackerBase {
+class MOLLERGEMSpectrometerTracker : public THaTrackingDetector, public MOLLERGEMTrackerBase {
  public:
-  explicit SBSGEMSpectrometerTracker( const char *name, const char *description = "",
+  explicit MOLLERGEMSpectrometerTracker( const char *name, const char *description = "",
                                       THaApparatus *app = nullptr );
 
-  virtual ~SBSGEMSpectrometerTracker();
+  virtual ~MOLLERGEMSpectrometerTracker();
 
   virtual void    Clear( Option_t* opt="" );
   virtual Int_t   Decode( const THaEvData& );
@@ -43,15 +43,15 @@ class SBSGEMSpectrometerTracker : public THaTrackingDetector, public SBSGEMTrack
   
   
  private:
-  // std::vector <SBSGEMModule *> fPlanes; storing the modules moved to SBSGEMTrackerBase
+  // std::vector <MOLLERGEMModule *> fPlanes; storing the modules moved to MOLLERGEMTrackerBase
 
   bool fTestTrackInitialized;
   
   TClonesArray *fTestTracks; 
-  //bool fIsMC; moved to SBSGEMTrackerBase
+  //bool fIsMC; moved to MOLLERGEMTrackerBase
 	
   //THaCrateMap *fCrateMap; //Does this do anything? Not as far as I can tell. I wish someone would have commented about why they added this. AJRP
-  ClassDef(SBSGEMSpectrometerTracker, 0);
+  ClassDef(MOLLERGEMSpectrometerTracker, 0);
 
 };
 

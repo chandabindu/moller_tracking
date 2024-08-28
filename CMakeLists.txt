@@ -1,6 +1,6 @@
 set(CMAKE_BUILD_TYPE "RelWithDebInfo" CACHE STRING "Set build type (RelWithDebInfo is default)")
 
-set(DEV_WARNING "cmake build of SBS-Offline is still in development. Please test and report issues")
+set(DEV_WARNING "cmake build of MOLLER-Offline is still in development. Please test and report issues")
 cmake_minimum_required(VERSION 3.9 FATAL_ERROR)
 
 project(moller)
@@ -52,10 +52,11 @@ endif()
 # there must be a corresponding header file (*.h).
 set(sources
   MOLLERSpectrometer.cxx
-  SBSGEMModule.cxx
-  SBSGEMTrackerBase.cxx
-  SBSGEMSpectrometerTracker.cxx
+  MOLLERGEMModule.cxx
+  MOLLERGEMTrackerBase.cxx
+  MOLLERGEMSpectrometerTracker.cxx
   MPDModule.cxx
+  MOLLERGenericDetector.cxx MOLLERElement.cxx MOLLERData.cxx MOLLERManager.cxx
   )
 
 # Headers.
@@ -189,7 +190,7 @@ endif()
 
 set(MOLLER_REPLAY_PATH ${DEFAULT_MOLLER_REPLAY_PATH} CACHE PATH "Path to ${REPLAYDIR} installation")
 
-# check if sbs_replay_path set by default from environment matches MOLLER-replay, adjust if needed:
+# check if moller_replay_path set by default from environment matches MOLLER-replay, adjust if needed:
 if( NOT ${MOLLER_REPLAY_PATH} MATCHES "/${REPLAYDIR}$" )
   if( ${MOLLER_REPLAY_PATH} MATCHES "/MOLLER-replay$" )
     message( WARNING "default replay directory ${MOLLER_REPLAY_PATH} from environment matches MOLLER-replay but GEN-replay option was given on the command-line, switching to MOLLER-replay" )

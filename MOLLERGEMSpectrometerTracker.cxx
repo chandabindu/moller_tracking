@@ -8,16 +8,16 @@
 #include "THaAnalysisObject.h"
 
 #include "THaSpectrometer.h"
-#include "SBSGEMSpectrometerTracker.h"
-#include "SBSGEMModule.h"
+#include "MOLLERGEMSpectrometerTracker.h"
+#include "MOLLERGEMModule.h"
 #include "THaTrack.h"
 #include "TClonesArray.h"
 #include "Helper.h"
 
 using namespace Podd;
 
-SBSGEMSpectrometerTracker::SBSGEMSpectrometerTracker( const char* name, const char* desc, THaApparatus* app ):
-  THaTrackingDetector(name,desc,app), SBSGEMTrackerBase() {
+MOLLERGEMSpectrometerTracker::MOLLERGEMSpectrometerTracker( const char* name, const char* desc, THaApparatus* app ):
+  THaTrackingDetector(name,desc,app), MOLLERGEMTrackerBase() {
 
   fModules.clear();
   fModulesInitialized = false;
@@ -40,13 +40,13 @@ SBSGEMSpectrometerTracker::SBSGEMSpectrometerTracker( const char* name, const ch
   fTestTracks = new TClonesArray("THaTrack",1);
 }
 
-SBSGEMSpectrometerTracker::~SBSGEMSpectrometerTracker(){
+MOLLERGEMSpectrometerTracker::~MOLLERGEMSpectrometerTracker(){
   fTestTracks->Clear("C");
   delete fTestTracks;
 }
 
 
-THaAnalysisObject::EStatus SBSGEMSpectrometerTracker::Init( const TDatime& date ){
+THaAnalysisObject::EStatus MOLLERGEMSpectrometerTracker::Init( const TDatime& date ){
   //assert( fCrateMap == 0 );
  
   // Why THaTrackingDetector::Init() here? THaTrackingDetector doesn't implement its own Init() method
@@ -82,8 +82,8 @@ THaAnalysisObject::EStatus SBSGEMSpectrometerTracker::Init( const TDatime& date 
   return kOK;
 }
 
-Int_t SBSGEMSpectrometerTracker::ReadDatabase( const TDatime& date ){
-  std::cout << "[Reading SBSGEMSpectrometerTracker database]" << std::endl;
+Int_t MOLLERGEMSpectrometerTracker::ReadDatabase( const TDatime& date ){
+  std::cout << "[Reading MOLLERGEMSpectrometerTracker database]" << std::endl;
 
   fIsInit = kFALSE;
 
@@ -232,7 +232,7 @@ Int_t SBSGEMSpectrometerTracker::ReadDatabase( const TDatime& date ){
   //vsplit is a Podd function that "tokenizes" a string into a vector<string> by whitespace:
   std::vector<std::string> modules = vsplit(modconfig);
   if( modules.empty()) {
-    Error("", "[SBSGEMSpectrometerTracker::ReadDatabase] No modules defined");
+    Error("", "[MOLLERGEMSpectrometerTracker::ReadDatabase] No modules defined");
   }
 
   int modcounter = 0;
@@ -284,7 +284,7 @@ Int_t SBSGEMSpectrometerTracker::ReadDatabase( const TDatime& date ){
 
     if( !fModulesInitialized ) {
       std::cout << "Initializing module " << module << "... ";
-      fModules[modcounter] = new SBSGEMModule(module.c_str(), module.c_str(), this);
+      fModules[modcounter] = new MOLLERGEMModule(module.c_str(), module.c_str(), this);
       std::cout << " done." << std::endl;
     }
     fModules[modcounter]->fModule = modcounter; //just a dummy index in the module array
@@ -299,7 +299,7 @@ Int_t SBSGEMSpectrometerTracker::ReadDatabase( const TDatime& date ){
 
   std::cout << "fNmodules = " << fNmodules << std::endl;
   
-  //Actually, the loading of the geometry was moved to SBSGEMModule::ReadDatabase(), since this information is specified on a module-by-module basis:
+  //Actually, the loading of the geometry was moved to MOLLERGEMModule::ReadDatabase(), since this information is specified on a module-by-module basis:
   // Int_t err = ReadGeometry( file, date );
   // if( err ) {
   //     fclose(file);
@@ -313,7 +313,7 @@ Int_t SBSGEMSpectrometerTracker::ReadDatabase( const TDatime& date ){
 }
 
 
-Int_t SBSGEMSpectrometerTracker::Begin( THaRunBase* run ) {
+Int_t MOLLERGEMSpectrometerTracker::Begin( THaRunBase* run ) {
   for( auto& module: fModules ) {
     module->Begin(run);
   }
@@ -324,17 +324,17 @@ Int_t SBSGEMSpectrometerTracker::Begin( THaRunBase* run ) {
 
   detname.Prepend(appname);
   
-  InitEfficiencyHistos(detname.Data()); //create efficiency histograms (see SBSGEMTrackerBase)
+  InitEfficiencyHistos(detname.Data()); //create efficiency histograms (see MOLLERGEMTrackerBase)
   
   
   return 0;
 }
 
-void SBSGEMSpectrometerTracker::Clear( Option_t *opt ){
+void MOLLERGEMSpectrometerTracker::Clear( Option_t *opt ){
   
   THaTrackingDetector::Clear(opt);
 
-  SBSGEMTrackerBase::Clear();
+  MOLLERGEMTrackerBase::Clear();
 
   //fTrigTime = 0.0;
   
@@ -343,9 +343,9 @@ void SBSGEMSpectrometerTracker::Clear( Option_t *opt ){
   }
 }
 
-Int_t SBSGEMSpectrometerTracker::Decode(const THaEvData& evdata ){
+Int_t MOLLERGEMSpectrometerTracker::Decode(const THaEvData& evdata ){
   //return 0;
-  //std::cout << "[SBSGEMSpectrometerTracker::Decode], decoding all modules, event ID = " << evdata.GetEvNum() <<  "...";
+  //std::cout << "[MOLLERGEMSpectrometerTracker::Decode], decoding all modules, event ID = " << evdata.GetEvNum() <<  "...";
 
   //attempt to decode trigger time. No error-checking is done here on the channel info so you'd better provide this correctly in
   //the DB:
@@ -362,7 +362,7 @@ Int_t SBSGEMSpectrometerTracker::Decode(const THaEvData& evdata ){
     double mintdiff = 1000.0;
     double besttime = 0.0;
     
-    //    std::cout << "[SBSGEMSpectrometerTracker::Decode]: ntrigtdchits = " << ntrigtdchits << std::endl;
+    //    std::cout << "[MOLLERGEMSpectrometerTracker::Decode]: ntrigtdchits = " << ntrigtdchits << std::endl;
     
     for( int ihit=0; ihit<ntrigtdchits; ihit++ ){
       UInt_t rawtdc = evdata.GetData( fCrate_RefTime, fSlot_RefTime, fChan_RefTime, ihit );
@@ -408,7 +408,7 @@ Int_t SBSGEMSpectrometerTracker::Decode(const THaEvData& evdata ){
 }
 
 
-Int_t SBSGEMSpectrometerTracker::End( THaRunBase* run ){
+Int_t MOLLERGEMSpectrometerTracker::End( THaRunBase* run ){
 
   UInt_t runnum = run->GetNumber(); 
 
@@ -555,10 +555,10 @@ Int_t SBSGEMSpectrometerTracker::End( THaRunBase* run ){
   return 0;
 }
 
-void SBSGEMSpectrometerTracker::Print(const Option_t* opt) const {
+void MOLLERGEMSpectrometerTracker::Print(const Option_t* opt) const {
   std::cout << "GEM Stand " << fName << " with " << fModules.size() << " planes defined:" << std::endl;
   /*
-    for (std::vector<SBSGEMModule *>::iterator it = fModules.begin() ; it != fModules.end(); ++it){
+    for (std::vector<MOLLERGEMModule *>::iterator it = fModules.begin() ; it != fModules.end(); ++it){
     std::cout << "\t"
     (*it)->Print(opt);
     }
@@ -569,14 +569,14 @@ void SBSGEMSpectrometerTracker::Print(const Option_t* opt) const {
 }
 
 
-void SBSGEMSpectrometerTracker::SetDebug( Int_t level ) {
+void MOLLERGEMSpectrometerTracker::SetDebug( Int_t level ) {
   THaTrackingDetector::SetDebug(level);
   for( auto& module: fModules ) {
     module->SetDebug(level);
   }
 }
 
-Int_t SBSGEMSpectrometerTracker::DefineVariables( EMode mode ){
+Int_t MOLLERGEMSpectrometerTracker::DefineVariables( EMode mode ){
   if( mode == kDefine and fIsSetup ) return kOK;
   fIsSetup = ( mode == kDefine );
   
@@ -742,11 +742,11 @@ Int_t SBSGEMSpectrometerTracker::DefineVariables( EMode mode ){
 }
 
 
-Int_t SBSGEMSpectrometerTracker::CoarseTrack( TClonesArray& tracks ){
+Int_t MOLLERGEMSpectrometerTracker::CoarseTrack( TClonesArray& tracks ){
   
   
   if( !fUseConstraint && !fPedestalMode ){
-    //std::cout << "SBSGEMSpectrometerTracker::CoarseTrack...";
+    //std::cout << "MOLLERGEMSpectrometerTracker::CoarseTrack...";
     //If no external constraints on the track search region are being used/defined, we do the track-finding in CoarseTrack (before processing all the THaNonTrackingDetectors in the parent spectrometer):
     //std::cout << "calling find_tracks..." << std::endl;
     find_tracks();
@@ -769,12 +769,12 @@ Int_t SBSGEMSpectrometerTracker::CoarseTrack( TClonesArray& tracks ){
   
   return 0;
 }
-Int_t SBSGEMSpectrometerTracker::FineTrack( TClonesArray& tracks ){
+Int_t MOLLERGEMSpectrometerTracker::FineTrack( TClonesArray& tracks ){
 
   
   if( fUseConstraint && !fPedestalMode ){ //
-    //std::cout << "SBSGEMSpectrometerTracker::FineTrack..."; 
-    //Calls SBSGEMTrackerBase::find_tracks(), which takes no arguments:
+    //std::cout << "MOLLERGEMSpectrometerTracker::FineTrack..."; 
+    //Calls MOLLERGEMTrackerBase::find_tracks(), which takes no arguments:
     //std::cout << "calling find_tracks" << std::endl;
 
     //Is using a constraint, only attempt tracking if constraints have actually been initialized with info from external detectors:
@@ -807,9 +807,9 @@ Int_t SBSGEMSpectrometerTracker::FineTrack( TClonesArray& tracks ){
   return 0;
 }
 
-bool SBSGEMSpectrometerTracker::PassedOpticsConstraint( TVector3 track_origin, TVector3 track_direction, bool coarsecheck ){
+bool MOLLERGEMSpectrometerTracker::PassedOpticsConstraint( TVector3 track_origin, TVector3 track_direction, bool coarsecheck ){
   
-  // std::cout << "[SBSGEMSpectrometerTracker::PassedOpticsConstraint]: Checking target reconstruction" 
+  // std::cout << "[MOLLERGEMSpectrometerTracker::PassedOpticsConstraint]: Checking target reconstruction" 
   // 	    << std::endl;
 
   double xptemp = track_direction.X()/track_direction.Z();
@@ -845,7 +845,7 @@ bool SBSGEMSpectrometerTracker::PassedOpticsConstraint( TVector3 track_origin, T
 
     bool goodtgtfp = true;
 
-    if( goodtarget && trtemp->HasDet() && fUseForwardOpticsConstraint ){ //non-standard use of the "detector coordinates", perhaps a bit risky, but when we have our SBSSpectrometer base class, this should be a standard interpretation/usage of these coordinates, and we currently don't use the "Det" coordinates in our SBSBigBite or SBSEArm classes in any other way
+    if( goodtarget && trtemp->HasDet() && fUseForwardOpticsConstraint ){ //non-standard use of the "detector coordinates", perhaps a bit risky, but when we have our MOLLERSpectrometer base class, this should be a standard interpretation/usage of these coordinates, and we currently don't use the "Det" coordinates in our MOLLERBigBite or MOLLEREArm classes in any other way
       double xfpforward_temp = trtemp->GetDX();
       double yfpforward_temp = trtemp->GetDY();
       double xpfpforward_temp = trtemp->GetDTheta();
@@ -871,4 +871,4 @@ bool SBSGEMSpectrometerTracker::PassedOpticsConstraint( TVector3 track_origin, T
 
 
 
-ClassImp(SBSGEMSpectrometerTracker)
+ClassImp(MOLLERGEMSpectrometerTracker)

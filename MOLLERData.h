@@ -1,10 +1,10 @@
-#ifndef SBSDATA_H
-#define SBSDATA_H
+#ifndef MOLLERDATA_H
+#define MOLLERDATA_H
 
 #include <vector>
 #include <Rtypes.h> // Include standard ROOT types
 
-namespace SBSData {
+namespace MOLLERData {
   ///////////////////////////////////////////////////////////////////////////////
   // Single valued data structure
   struct SingleData {
@@ -249,6 +249,6 @@ namespace SBSData {
   };
 
 
-} // end SBSData namespace
+} // end MOLLERData namespace
 
-#endif // SBSDATA_H
+#endif // MOLLERDATA_H

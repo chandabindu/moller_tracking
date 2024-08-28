@@ -1,25 +1,25 @@
-#ifndef ROOT_SBSElement
-#define ROOT_SBSElement
+#ifndef ROOT_MOLLERElement
+#define ROOT_MOLLERElement
 
 ////////////////////////////////////////////////////////////////////////////
 //                                                                        //
-// SBSElement                                                       //
+// MOLLERElement                                                       //
 //                                                                        //
 ////////////////////////////////////////////////////////////////////////////
 
 #include <TObject.h>
-#include "SBSData.h"
+#include "MOLLERData.h"
 
 
 ///////////////////////////////////////////////////////////////////////////////
 
-class SBSElement : public TObject {
+class MOLLERElement : public TObject {
 
 public:
-  SBSElement() : fADC(nullptr), fTDC(nullptr), fWaveform(nullptr) {};
-  SBSElement(Double_t x, Double_t y, Double_t z,
+  MOLLERElement() : fADC(nullptr), fTDC(nullptr), fWaveform(nullptr) {};
+  MOLLERElement(Double_t x, Double_t y, Double_t z,
       Int_t row, Int_t col, Int_t layer, Int_t id = 0);
-  virtual ~SBSElement();
+  virtual ~MOLLERElement();
 
   // Getters
   Double_t GetX()     const { return fX; }
@@ -34,9 +34,9 @@ public:
   Int_t   GetLayer() const { return fLayer; }
   Int_t   GetStat()  const { return fStat; }
   Int_t   GetID()    const { return fID; }
-  virtual SBSData::ADC* ADC()         { return fADC; }
-  virtual SBSData::TDC* TDC()         { return fTDC; }
-  virtual SBSData::Waveform* Waveform() { return fWaveform; }
+  virtual MOLLERData::ADC* ADC()         { return fADC; }
+  virtual MOLLERData::TDC* TDC()         { return fTDC; }
+  virtual MOLLERData::Waveform* Waveform() { return fWaveform; }
 
   // Setters
   void SetX(Double_t var)    { fX = var; }
@@ -78,11 +78,11 @@ protected:
   Int_t   fStat;    ///< Status: 0: not seen, 1: seen, 2: local max
   Int_t   fID;      ///< a logical number to this element
 
-  SBSData::ADC *fADC; //< All ADC hits
-  SBSData::TDC *fTDC; //< All TDC hits
-  SBSData::Waveform *fWaveform;
+  MOLLERData::ADC *fADC; //< All ADC hits
+  MOLLERData::TDC *fTDC; //< All TDC hits
+  MOLLERData::Waveform *fWaveform;
 
-  ClassDef(SBSElement,1) ///< Generic shower block class (no data)
+  ClassDef(MOLLERElement,1) ///< Generic shower block class (no data)
 };
 
 #endif

@@ -1,19 +1,19 @@
 ///////////////////////////////////////////////////////////////////////////////
 //                                                                           //
-// SBSElement                                                                //
+// MOLLERElement                                                                //
 //                                                                           //
 ///////////////////////////////////////////////////////////////////////////////
 
 
 #include <iostream>
-#include "SBSElement.h"
+#include "MOLLERElement.h"
 #include "DataType.h"
 
-ClassImp(SBSElement);
+ClassImp(MOLLERElement);
 
 ///////////////////////////////////////////////////////////////////////////////
 // Constructor for generic Element (no-data)
-SBSElement::SBSElement(Double_t x, Double_t y,
+MOLLERElement::MOLLERElement(Double_t x, Double_t y,
     Double_t z, Int_t row, Int_t col, Int_t layer, Int_t id) :
   fX(x), fY(y), fZ(z), fE(0), fAgain(0), fAtime(kBig), fTDCtime(kBig), fRow(row), fCol(col), fLayer(layer),
   fStat(0), fID(id), fADC(nullptr), fTDC(nullptr), fWaveform(nullptr)
@@ -21,7 +21,7 @@ SBSElement::SBSElement(Double_t x, Double_t y,
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-SBSElement::~SBSElement()
+MOLLERElement::~MOLLERElement()
 {
   delete fADC;
   delete fTDC;
@@ -30,13 +30,13 @@ SBSElement::~SBSElement()
 
 ///////////////////////////////////////////////////////////////////////////////
 // Check if this block has any ADC data
-Bool_t SBSElement::HasData()
+Bool_t MOLLERElement::HasData()
 {
   return ( ( fADC && fADC->HasData() ) || ( fTDC && fTDC->HasData() ) || ( fWaveform && fWaveform->HasData() ) );
 }
 
 // Check if this block has any ADC data
-Bool_t SBSElement::HasADCData()
+Bool_t MOLLERElement::HasADCData()
 {
   return ( ( fADC && fADC->HasData() ) || ( fWaveform && fWaveform->HasData() ) );
 }
@@ -44,7 +44,7 @@ Bool_t SBSElement::HasADCData()
 
 ///////////////////////////////////////////////////////////////////////////////
 // Clear event from generic Element (with no data)
-void SBSElement::Clear( Option_t* opt )
+void MOLLERElement::Clear( Option_t* opt )
 {
   fE = 0; // Reset calibrated energy for given event
   fAgain = 0.;
@@ -61,25 +61,25 @@ void SBSElement::Clear( Option_t* opt )
 
 ///////////////////////////////////////////////////////////////////////////////
 // Create a single-valued ADC data structure
-void SBSElement::SetADC(Double_t ped, Double_t gain)
+void MOLLERElement::SetADC(Double_t ped, Double_t gain)
 {
   delete fADC;
-  fADC = new SBSData::ADC(ped,gain);
+  fADC = new MOLLERData::ADC(ped,gain);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 // Create a TDC data structure
-void SBSElement::SetTDC(Double_t offset, Double_t cal, Double_t GoodTimeCut)
+void MOLLERElement::SetTDC(Double_t offset, Double_t cal, Double_t GoodTimeCut)
 {
   delete fTDC;
-  fTDC = new SBSData::TDC(offset,cal,GoodTimeCut);
+  fTDC = new MOLLERData::TDC(offset,cal,GoodTimeCut);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 // Create a multi-valued ADC data structure
-void SBSElement::SetWaveform(Double_t ped, Double_t gain, Double_t ChanToMv, Double_t adc_timecut)
+void MOLLERElement::SetWaveform(Double_t ped, Double_t gain, Double_t ChanToMv, Double_t adc_timecut)
 {
   delete fWaveform;
-  fWaveform = new SBSData::Waveform(ped,gain,ChanToMv,adc_timecut);
+  fWaveform = new MOLLERData::Waveform(ped,gain,ChanToMv,adc_timecut);
 }
 

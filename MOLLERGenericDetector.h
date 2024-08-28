@@ -1,9 +1,9 @@
-#ifndef SBSGenericDetector_h
-#define SBSGenericDetector_h
+#ifndef MOLLERGenericDetector_h
+#define MOLLERGenericDetector_h
 
 ////////////////////////////////////////////////////////////////////////////////
 //
-//SBSGenericDetector
+//MOLLERGenericDetector
 //
 // A generic detector class which could contain the following types
 // of data:
@@ -24,10 +24,10 @@
 #include "TRotation.h"
 #include "TVector3.h"
 #include "THaDetMap.h"
-#include "SBSElement.h"
+#include "MOLLERElement.h"
 #include "Helper.h"
 
-namespace SBSModeADC {
+namespace MOLLERModeADC {
   enum Mode{
     kNone,
     kADC,       //< Contains pulse information also
@@ -36,7 +36,7 @@ namespace SBSModeADC {
   };
 }
 
-namespace SBSModeTDC {
+namespace MOLLERModeTDC {
   enum Mode{
     kNone,
     kIgnore,        //< Useful to preserve DB but ignore ADCs otherwise
@@ -52,7 +52,7 @@ struct TDCHits {
 
 // This structure has output data when the user wants every hit to be stored
 // in the rootfile.
-struct SBSGenericOutputData {
+struct MOLLERGenericOutputData {
   // Note [] means it can be variable sized data per event/module
   // Module info
   std::vector<Int_t> TDCrow;       //< [] row
@@ -118,41 +118,41 @@ struct SBSGenericOutputData {
   }
 };
 
-class SBSGenericDetector : public THaNonTrackingDetector {
-  //class SBSGenericDetector : public THaShower {
+class MOLLERGenericDetector : public THaNonTrackingDetector {
+  //class MOLLERGenericDetector : public THaShower {
 
 public:
-  explicit SBSGenericDetector( const char* name, const char* description = "",
+  explicit MOLLERGenericDetector( const char* name, const char* description = "",
                                THaApparatus* a = nullptr);
-  virtual ~SBSGenericDetector();
+  virtual ~MOLLERGenericDetector();
 
   virtual void Clear( Option_t* opt="" );
 
-  void SetModeADC(SBSModeADC::Mode mode);
-  void SetModeTDC(SBSModeTDC::Mode mode) { fModeTDC = mode; }
+  void SetModeADC(MOLLERModeADC::Mode mode);
+  void SetModeTDC(MOLLERModeTDC::Mode mode) { fModeTDC = mode; }
   void SetDisableRefADC(Bool_t b) { fDisableRefADC = b; }
   void SetDisableRefTDC(Bool_t b) { fDisableRefTDC = b; }
   void SetStoreRawHits(Bool_t var) { fStoreRawHits = var; }
   void SetStoreEmptyElements(Bool_t b) { fStoreEmptyElements = b; }
 
-  Bool_t WithTDC() { return fModeTDC != SBSModeTDC::kNone; };
-  Bool_t WithADC() { return fModeADC != SBSModeADC::kNone; };
+  Bool_t WithTDC() { return fModeTDC != MOLLERModeTDC::kNone; };
+  Bool_t WithADC() { return fModeADC != MOLLERModeADC::kNone; };
 
   // Standard apparatus re-implemented functions
   virtual Int_t      Decode( const THaEvData& );
   virtual Int_t      CoarseProcess(TClonesArray& tracks);
   virtual Int_t      FineProcess(TClonesArray& tracks);
 
-  virtual Int_t      DecodeADC( const THaEvData&, SBSElement *blk,
+  virtual Int_t      DecodeADC( const THaEvData&, MOLLERElement *blk,
 				THaDetMap::Module *d, Int_t chan, Bool_t IsRef);
-  virtual Int_t      DecodeTDC( const THaEvData&, SBSElement *blk,
+  virtual Int_t      DecodeTDC( const THaEvData&, MOLLERElement *blk,
       THaDetMap::Module *d, Int_t chan, Bool_t IsRef);
 
   // Utility functions
   // Can be re-implemented by other classes to specify a different
-  // SBSElement sub-class (i.e. useful when one wants to chang  the logic
-  // in SBSElement::CoarseProcess()
-  virtual SBSElement* MakeElement(Double_t x, Double_t y, Double_t z, Int_t row,
+  // MOLLERElement sub-class (i.e. useful when one wants to chang  the logic
+  // in MOLLERElement::CoarseProcess()
+  virtual MOLLERElement* MakeElement(Double_t x, Double_t y, Double_t z, Int_t row,
       Int_t col, Int_t layer, Int_t id = 0);
   
   Double_t SizeRow() const { return fSizeRow; };
@@ -162,7 +162,7 @@ protected:
 
   virtual Int_t  ReadDatabase( const TDatime& date );
   virtual Int_t  DefineVariables( EMode mode = kDefine );
-  virtual Int_t  FindGoodHit(SBSElement *); // 
+  virtual Int_t  FindGoodHit(MOLLERElement *); // 
 
   // Configuration
   Int_t  fNRefElem;        ///< Number of Ref Time elements
@@ -172,8 +172,8 @@ protected:
   Double_t fSizeCol;
   Int_t fNcolsMax;      ///< Max number of columns out of all rows
   Int_t  fNlayers;      ///< Number of layers (in z-direction)
-  SBSModeADC::Mode fModeADC;      //< ADC Mode
-  SBSModeTDC::Mode fModeTDC;      //< TDC Mode
+  MOLLERModeADC::Mode fModeADC;      //< ADC Mode
+  MOLLERModeTDC::Mode fModeTDC;      //< TDC Mode
   Bool_t fDisableRefADC; //< Reference ADC may be optionally disabled
   Bool_t fDisableRefTDC; //< Reference TDC may be optionally disabled
   Bool_t fStoreEmptyElements; //< Do not store data for empty elements in rootfile
@@ -190,15 +190,15 @@ protected:
   std::vector<Int_t> fRefChanHi; //< Module Reftime High channel number
 
   // Output variable containers
-  SBSGenericOutputData fGood;     //< Good data output
-  SBSGenericOutputData fRaw;      //< All hits
-  SBSGenericOutputData fRefGood;     //< Good Ref time data output
-  SBSGenericOutputData fRefRaw;      //< All Ref time hits
+  MOLLERGenericOutputData fGood;     //< Good data output
+  MOLLERGenericOutputData fRaw;      //< All hits
+  MOLLERGenericOutputData fRefGood;     //< Good Ref time data output
+  MOLLERGenericOutputData fRefRaw;      //< All Ref time hits
 
   // Blocks, where the grid is just for easy access to the elements by row,col,layer
-  std::vector<SBSElement*> fElements;
-  std::vector<SBSElement*> fRefElements; //< Reference elements (for TDCs and multi-function ADCs)
-  std::vector<std::vector<std::vector<SBSElement*> > > fElementGrid;
+  std::vector<MOLLERElement*> fElements;
+  std::vector<MOLLERElement*> fRefElements; //< Reference elements (for TDCs and multi-function ADCs)
+  std::vector<std::vector<std::vector<MOLLERElement*> > > fElementGrid;
   // Clusters for this event
 
   // Other parameters
@@ -222,15 +222,15 @@ protected:
 private:
   void ClearOutputVariables();
 
-  ClassDef(SBSGenericDetector,0)     //Generic shower detector class
+  ClassDef(MOLLERGenericDetector,0)     //Generic shower detector class
 };
 
-/*inline Int_t SBSGenericDetector::blkidx(Int_t row, Int_t col, Int_t layer)
+/*inline Int_t MOLLERGenericDetector::blkidx(Int_t row, Int_t col, Int_t layer)
 {
   return fNlayers*(fNcols[row]*row + col) + layer;
 }
 
-inline void SBSGenericDetector::blkrcl(Int_t index, Int_t &row, Int_t &col,
+inline void MOLLERGenericDetector::blkrcl(Int_t index, Int_t &row, Int_t &col,
     Int_t &layer)
 {
   row = index/(fNlayers*fNcols);
@@ -243,4 +243,4 @@ inline void SBSGenericDetector::blkrcl(Int_t index, Int_t &row, Int_t &col,
 ////////////////////////////////////////////////////////////////////////////////
 // Specify some default sub-classes available to the user
 
-#endif // SBSGenericDetector_h
+#endif // MOLLERGenericDetector_h

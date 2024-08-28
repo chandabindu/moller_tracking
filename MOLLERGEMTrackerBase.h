@@ -1,11 +1,11 @@
-#ifndef SBSGEMTRACKERBASE_H
-#define SBSGEMTRACKERBASE_H
+#ifndef MOLLERGEMTRACKERBASE_H
+#define MOLLERGEMTRACKERBASE_H
 
 #include <vector>
 #include <map>
 #include <set>
 #include <fstream>
-//#include "SBSGEMModule.h"
+//#include "MOLLERGEMModule.h"
 #include "TVector3.h"
 #include "TVector2.h"
 //#include <THaTrackingDetector.h>
@@ -14,17 +14,17 @@
 //class THaRunBase;
 //class THaApparatus;
 //class THaEvData;
-class SBSGEMModule;
+class MOLLERGEMModule;
 class TClonesArray;
 
 //class THaCrateMap;
 
 //This class is not going to inherit from THaAnything or from TObject.
-//Instead, this class is only going to contain the common data members and methods needed by SBSGEMSpectrometerTracker and SBSGEMPolarimeterTracker, largely following the stand-alone clustering and track finding codes. The database reading and initialization will be taken care of by the derived classes: 
+//Instead, this class is only going to contain the common data members and methods needed by MOLLERGEMSpectrometerTracker and MOLLERGEMPolarimeterTracker, largely following the stand-alone clustering and track finding codes. The database reading and initialization will be taken care of by the derived classes: 
 //Base class for GEM tracking assembly (of either the "tracking" or "non-tracking" flavor)
 
 
-class SBSGEMTrackerBase {
+class MOLLERGEMTrackerBase {
 public:
   void Clear(); //clear out all the event-specific data structures
 
@@ -67,8 +67,8 @@ public:
   inline void SetMakeCommonModePlots( int cmplots=0 ){ fCommonModePlotsFlag = cmplots; fCommonModePlotsFlagIsSet = true; }
 
 protected:
-  SBSGEMTrackerBase(); //only derived classes can construct me.
-  virtual ~SBSGEMTrackerBase(); 
+  MOLLERGEMTrackerBase(); //only derived classes can construct me.
+  virtual ~MOLLERGEMTrackerBase(); 
 
   bool fclustering_done;
   bool ftracking_done;
@@ -140,10 +140,10 @@ protected:
   void PurgeHits(int itrack);
   
   //Data members:
-  std::vector <SBSGEMModule *> fModules; //array of SBSGEMModules:
+  std::vector <MOLLERGEMModule *> fModules; //array of MOLLERGEMModules:
   bool fModulesInitialized;
 
-  //Moved these to SBSGEMModule:
+  //Moved these to MOLLERGEMModule:
   //bool fOnlineZeroSuppression; //Flag specifying whether pedestal subtraction has been done "online" (maybe this should be module-specific? probably not)
   //bool fZeroSuppress;
   //double fZeroSuppressRMS;
@@ -254,8 +254,8 @@ protected:
   
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   //            DATA members to hold the track information (at least temporarily, will eventually                 //
-  //            be passed to the THaSpectrometer tracks TClonesArray for SBSGEMSpectrometerTracker                //
-  //            We'll need to figure out how to handle things for SBSGEMPolarimeterTracker                        //
+  //            be passed to the THaSpectrometer tracks TClonesArray for MOLLERGEMSpectrometerTracker                //
+  //            We'll need to figure out how to handle things for MOLLERGEMPolarimeterTracker                        //
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   //////////////////// "Hit list" arrays used by tracking algorithm /////////////////////////
@@ -514,8 +514,8 @@ protected:
   
   //We'll define hit map/efficiency histograms here.
   // NOTE: in order for these to actually show up in output, derived classes must initialize these histograms
-  // in SBSGEMSpectrometerTracker::Begin() or SBSGEMPolarimeterTracker::Begin() and
-  // write them to the output ROOT file in SBSGEMSpectrometerTracker::End() or SBSGEMPolarimeterTracker::End()
+  // in MOLLERGEMSpectrometerTracker::Begin() or MOLLERGEMPolarimeterTracker::Begin() and
+  // write them to the output ROOT file in MOLLERGEMSpectrometerTracker::End() or MOLLERGEMPolarimeterTracker::End()
   TClonesArray *hdidhit_x_layer;
   TClonesArray *hdidhit_y_layer;
   TClonesArray *hdidhit_xy_layer;

@@ -1,5 +1,5 @@
-#ifndef SBSGEMModule_H
-#define SBSGEMModule_H
+#ifndef MOLLERGEMModule_H
+#define MOLLERGEMModule_H
 
 #include "THaSubDetector.h"
 #include <vector>
@@ -18,7 +18,7 @@ class TH2D;
 class TF1;
 class TClonesArray;
 
-namespace SBSGEM {
+namespace MOLLERGEM {
   enum GEMaxis_t { kUaxis=0, kVaxis };
   enum APVmap_t { kINFN=0, kUVA_XY, kUVA_UV, kUVA_MOLLER, kMC };
 }
@@ -40,18 +40,18 @@ struct mpdmap_t {
 
 //Clustering results can be held in a simple C struct, as a cluster is just a collection of basic data types (not even arrays):
 //Each module will have an array of clusters as a data member:
-struct sbsgemhit_t { //2D reconstructed hits
+struct mollergemhit_t { //2D reconstructed hits
   //Module and layer info: I think we don't need here because it's already associated with the module containing the cluster!
   //Track info:
   Bool_t keep;     //Should this cluster be considered for tracking? We use this variable to implement "cluster quality" cuts (thresholds, XY ADC and time correlation, etc.)
   Bool_t ontrack;  //Is this cluster on any track?
   Bool_t highquality; //is this a "high quality" hit?
-  Int_t trackidx; //Index of track containing this cluster (within the array of tracks found by the parent SBSGEMTracker
+  Int_t trackidx; //Index of track containing this cluster (within the array of tracks found by the parent MOLLERGEMTracker
   UInt_t iuclust;  //Index in (1D) U cluster array of the "U" cluster used to define this 2D hit.
   UInt_t ivclust;  //Index in (1D) V cluster array of the "V" cluster used to define this 2D hit.
   
   //Strip info: should we store a list of strips? We shouldn't need to if the clustering algorithm requires all strips in a cluster to be contiguous:
-  //Some of this information is probably redundant with 1D clustering results stored in sbsgemcluster_t, but it may or may not be more efficient to store a copy here:
+  //Some of this information is probably redundant with 1D clustering results stored in mollergemcluster_t, but it may or may not be more efficient to store a copy here:
   /* UShort_t nstripu; //Number of strips in cluster along "U" axis */
   /* UShort_t nstripv; //Number of strips in cluster along "V" axis */
   /* UShort_t ustriplo; //lowest u strip index in cluster */
@@ -67,9 +67,9 @@ struct sbsgemhit_t { //2D reconstructed hits
   Double_t vhit;  //Reconstructed V position of cluster in local module/strip coordinates
   Double_t xhit;  //Reconstructed "X" position of cluster in local module/strip coordinates
   Double_t yhit;  //Reconstructed "Y" position of cluster in local module/strip coordinates
-  Double_t xghit; //"Global" X coordinate of hit (in coordinate system of parent SBSGEMTracker: usually spectrometer TRANSPORT coordinate)
-  Double_t yghit; //"Global" Y coordinate of hit (in coordinates of parent SBSGEMTracker)
-  Double_t zghit; //"Global" Z coordinate of hit (in coordinates of parent SBSGEMTracker)
+  Double_t xghit; //"Global" X coordinate of hit (in coordinate system of parent MOLLERGEMTracker: usually spectrometer TRANSPORT coordinate)
+  Double_t yghit; //"Global" Y coordinate of hit (in coordinates of parent MOLLERGEMTracker)
+  Double_t zghit; //"Global" Z coordinate of hit (in coordinates of parent MOLLERGEMTracker)
   //
   Double_t Ehit;  //Sum of all ADC values on all strips in the cluster: actually 1/2*( ADCX + ADCY ); i.e., average of cluster sums in X and Y
   /* Double_t Euhit; //Sum of all ADC values on U strips in the cluster; */
@@ -94,7 +94,7 @@ struct sbsgemhit_t { //2D reconstructed hits
   Double_t tdiffFit; //same as "tdiff" but using "fit times";
 };
   
-struct sbsgemcluster_t {  //1D clusters;
+struct mollergemcluster_t {  //1D clusters;
   UInt_t nstrips;
   UInt_t istriplo;
   UInt_t istriphi;
@@ -144,13 +144,13 @@ struct sbsgemcluster_t {  //1D clusters;
 
 //Is the use of THaSubDetector appropriate here? Or should we just use THaDetector or similar?
   
-class SBSGEMModule : public THaSubDetector {
+class MOLLERGEMModule : public THaSubDetector {
  public:
 
-  explicit SBSGEMModule( const char *name, const char *description = "",
+  explicit MOLLERGEMModule( const char *name, const char *description = "",
                          THaDetectorBase* parent = nullptr );
 
-  virtual ~SBSGEMModule();
+  virtual ~MOLLERGEMModule();
 
   virtual void    Clear( Option_t* opt="" ); //should be called once per event
   virtual Int_t   Decode( const THaEvData& );
@@ -158,7 +158,7 @@ class SBSGEMModule : public THaSubDetector {
 
   virtual Int_t   ReadDatabase(const TDatime& );
   virtual Int_t   DefineVariables( EMode mode );
-  //We are overriding THaDetectorBase's ReadGeometry method for SBSGEMModule, because we use a different definition of the angles:
+  //We are overriding THaDetectorBase's ReadGeometry method for MOLLERGEMModule, because we use a different definition of the angles:
   virtual Int_t   ReadGeometry( FILE* file, const TDatime& date, 
 			      Bool_t required = true );
   
@@ -168,10 +168,10 @@ class SBSGEMModule : public THaSubDetector {
   void SetMakeCommonModePlots( int cmplots=0 ){ fMakeCommonModePlots = cmplots != 0; fCommonModePlots_DBoverride = true; }
   
   //Don't call this method directly, it is called by find_2Dhits. Call that instead:
-  void find_clusters_1D(SBSGEM::GEMaxis_t axis, Double_t constraint_center=0.0, Double_t constraint_width=1000.0); //Assuming decode has already been called; this method is fast so we probably don't need to implement constraint points and widths here, or do we?
+  void find_clusters_1D(MOLLERGEM::GEMaxis_t axis, Double_t constraint_center=0.0, Double_t constraint_width=1000.0); //Assuming decode has already been called; this method is fast so we probably don't need to implement constraint points and widths here, or do we?
 
   //new version to do clustering and spatial splitting in each time sample, and then combine the different time samples
-  void find_clusters_1D_experimental(SBSGEM::GEMaxis_t axis, Double_t constraint_center=0.0, Double_t constraint_width=1000.0);
+  void find_clusters_1D_experimental(MOLLERGEM::GEMaxis_t axis, Double_t constraint_center=0.0, Double_t constraint_width=1000.0);
   
   void find_2Dhits(); // Version with no arguments assumes no constraint points
   void find_2Dhits(TVector2 constraint_center, TVector2 constraint_width); // Version with TVector2 arguments 
@@ -180,7 +180,7 @@ class SBSGEMModule : public THaSubDetector {
   void fill_2D_hit_arrays(); 
 
   //Filter 1D hits by criteria possibly to include ADC threshold, cluster size
-  void filter_1Dhits(SBSGEM::GEMaxis_t axis);
+  void filter_1Dhits(MOLLERGEM::GEMaxis_t axis);
   
   //Filter 2D hits by criteria possibly to include ADC X/Y asymmetry, cluster size, time correlation, (lack of) overlap, possibly others:
   void filter_2Dhits(); 
@@ -206,7 +206,7 @@ class SBSGEMModule : public THaSubDetector {
   void fill_ADCfrac_vs_time_sample_goodstrip( Int_t hitindex, bool max=false );
 
   double FitStripTime( int striphitindex, double RMS=20.0 ); // "dumb" fit method 
-  void FitClusterTime( sbsgemcluster_t &clus ); //calculate "fit time" for cluster-summed ADC samples
+  void FitClusterTime( mollergemcluster_t &clus ); //calculate "fit time" for cluster-summed ADC samples
 
   double CalcFitTime( const std::vector<Double_t> &samples, double RMS=20.0 );
   
@@ -227,7 +227,7 @@ class SBSGEMModule : public THaSubDetector {
   
   //UShort_t GetLayer() const { return fLayer; }
 
-  //std::vector<sbsgemhit_t> GetHitList() { return fHits; }
+  //std::vector<mollergemhit_t> GetHitList() { return fHits; }
   
   //If we are going to declare all these data members private, we will need to write public getters and setters for at least the information required by the tracker classes:
   //private:
@@ -252,7 +252,7 @@ class SBSGEMModule : public THaSubDetector {
   std::vector<Double_t> fCommonModeOnlineBiasRollingRMS_by_APV;
   std::vector<UInt_t> fNeventsOnlineBias_by_APV;
   
-  SBSGEM::APVmap_t fAPVmapping; //choose APV channel --> strip mapping; there are only three possible values supported for now (see SBSGEM::APVmap_t)
+  MOLLERGEM::APVmap_t fAPVmapping; //choose APV channel --> strip mapping; there are only three possible values supported for now (see MOLLERGEM::APVmap_t)
 
   std::array<std::vector<UInt_t>, 5 > APVMAP;
 
@@ -417,10 +417,10 @@ class SBSGEMModule : public THaSubDetector {
   /* std::map<UInt_t, UInt_t> fUstripIndex;  */
   /* std::map<UInt_t, UInt_t> fVstripIndex;  */
 
-  //std::vector<sbsgemstrip_t> fDecodedStrips;
+  //std::vector<mollergemstrip_t> fDecodedStrips;
   
   std::vector<UInt_t> fStrip;  //Strip index of hit (these could be "U" or "V" generalized X and Y), assumed to run from 0..N-1
-  std::vector<SBSGEM::GEMaxis_t>  fAxis;  //We just made our enumerated type that has two possible values, makes the code more readable (maybe)
+  std::vector<MOLLERGEM::GEMaxis_t>  fAxis;  //We just made our enumerated type that has two possible values, makes the code more readable (maybe)
   std::vector<std::vector<Double_t> > fADCsamples; //2D array of ADC samples by hit: Outer index runs over hits; inner index runs over ADC samples
   std::vector<std::vector<Int_t> > fRawADCsamples; //2D array of raw (non-baseline-subtracted) ADC values.
   std::vector<std::vector<Double_t> > fADCsamples_deconv; //"Deconvoluted" ADC samples
@@ -469,7 +469,7 @@ class SBSGEMModule : public THaSubDetector {
   std::vector<UInt_t> fStripUonTrack;
   std::vector<UInt_t> fStripVonTrack;
   
-  ////// (1D and 2D) Clustering results (see above for definition of struct sbsgemcluster_t and struct sbsgemhit_t):
+  ////// (1D and 2D) Clustering results (see above for definition of struct mollergemcluster_t and struct mollergemhit_t):
 
   UInt_t fNclustU; // number of U clusters found
   UInt_t fNclustV; // number of V clusters found
@@ -479,12 +479,12 @@ class SBSGEMModule : public THaSubDetector {
   UInt_t fNclustV_neg; // number of negative V clusters found
   UInt_t fNclustU_total; // Number of U clusters found in entire active area, without enforcing search region constraint
   UInt_t fNclustV_total; // Number of U clusters found in entire active area, without enforcing search region constraint
-  std::vector<sbsgemcluster_t> fUclusters; //1D clusters along "U" direction
-  std::vector<sbsgemcluster_t> fVclusters; //1D clusters along "V" direction
+  std::vector<mollergemcluster_t> fUclusters; //1D clusters along "U" direction
+  std::vector<mollergemcluster_t> fVclusters; //1D clusters along "V" direction
 
   UInt_t fMAX2DHITS; // Max. 2d hits per module, to limit memory usage:
   UInt_t fN2Dhits; // number of 2D hits found in region of interest:
-  std::vector<sbsgemhit_t> fHits; //2D hit reconstruction results
+  std::vector<mollergemhit_t> fHits; //2D hit reconstruction results
 
   /////////////////////// Global variables that are more convenient for ROOT Tree/Histogram Output (to the extent needed): ///////////////////////
   //Raw strip info:
@@ -740,7 +740,7 @@ class SBSGEMModule : public THaSubDetector {
   // TClonesArray *hpedestal_subtracted_ADCs_by_strip_sampleU;
   // TClonesArray *hpedestal_subtracted_ADCs_by_strip_sampleV;
   
-  ClassDef(SBSGEMModule,0);
+  ClassDef(MOLLERGEMModule,0);
 
 };
 

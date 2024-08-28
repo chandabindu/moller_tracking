@@ -1,11 +1,11 @@
 ////////////////////////////////////////////////////////////////////////////////
 //
-// SBSGenericDetector
+// MOLLERGenericDetector
 //
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "SBSGenericDetector.h"
+#include "MOLLERGenericDetector.h"
 
 #include "THaEvData.h"
 #include "THaDetMap.h"
@@ -15,7 +15,7 @@
 #include "TClonesArray.h"
 #include "TDatime.h"
 #include "TMath.h"
-#include "SBSManager.h"
+#include "MOLLERManager.h"
 #include "THaCrateMap.h"
 #include "Helper.h"
 
@@ -23,17 +23,17 @@
 #include <iostream>
 #include <iomanip>
 
-ClassImp(SBSGenericDetector);
+ClassImp(MOLLERGenericDetector);
 
 ///////////////////////////////////////////////////////////////////////////////
-/// SBSGenericDetector constructor
+/// MOLLERGenericDetector constructor
 ///
 /// The default is to have single-valued ADC with no TDC information
 /// Sub-classes can change this accordingly.
-SBSGenericDetector::SBSGenericDetector( const char* name, const char* description,
+MOLLERGenericDetector::MOLLERGenericDetector( const char* name, const char* description,
     THaApparatus* apparatus ) :
   THaNonTrackingDetector(name,description,apparatus), fNrows(0),fNcolsMax(0),
-  fNlayers(0), fModeADC(SBSModeADC::kADCSimple), fModeTDC(SBSModeTDC::kNone),
+  fNlayers(0), fModeADC(MOLLERModeADC::kADCSimple), fModeTDC(MOLLERModeTDC::kNone),
   fDisableRefADC(true),fDisableRefTDC(true),
   fStoreEmptyElements(false), fIsMC(false), fChanMapStart(0),
   fCoarseProcessed(false), fFineProcessed(false),
@@ -44,7 +44,7 @@ SBSGenericDetector::SBSGenericDetector( const char* name, const char* descriptio
 
 ///////////////////////////////////////////////////////////////////////////////
 /// Default Destructor
-SBSGenericDetector::~SBSGenericDetector()
+MOLLERGenericDetector::~MOLLERGenericDetector()
 {
   // Destructor. Removes internal arrays and global variables.
 
@@ -58,16 +58,16 @@ SBSGenericDetector::~SBSGenericDetector()
 
 ///////////////////////////////////////////////////////////////////////////////
 /// SetModeADC
-void SBSGenericDetector::SetModeADC(SBSModeADC::Mode mode)
+void MOLLERGenericDetector::SetModeADC(MOLLERModeADC::Mode mode)
 {
   fModeADC = mode;
   // Only the multi-function ADC is expected to have reference ADC
-  SetDisableRefADC(fModeADC != SBSModeADC::kADC); 
+  SetDisableRefADC(fModeADC != MOLLERModeADC::kADC); 
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-/// Read SBSGenericDetector Database
-Int_t SBSGenericDetector::ReadDatabase( const TDatime& date )
+/// Read MOLLERGenericDetector Database
+Int_t MOLLERGenericDetector::ReadDatabase( const TDatime& date )
 {
 
   // Read this detector's parameters from the database file 'fi'.
@@ -301,7 +301,7 @@ Int_t SBSGenericDetector::ReadDatabase( const TDatime& date )
     fRefChanMap.resize(nmodules);
     fRefChanLo.resize(nmodules);
     fRefChanHi.resize(nmodules);
-    Decoder::THaCrateMap *cratemap = SBSManager::GetInstance()->GetCrateMap();
+    Decoder::THaCrateMap *cratemap = MOLLERManager::GetInstance()->GetCrateMap();
     Int_t kr = 0,ka = 0, kt = 0, km = 0, k = 0;
     for( Int_t i = 0; i < nmodules && !err; i++) {
       Int_t krmod = 0;
@@ -318,7 +318,7 @@ Int_t SBSGenericDetector::ReadDatabase( const TDatime& date )
 	if (d->GetModel() == 526) {
 	  d->MakeTDC(); 
 	} else {
-          Error( Here(here), "Need to modify SBSGenericDetector to specify whether TDC or ADC for module %d.", i);   
+          Error( Here(here), "Need to modify MOLLERGenericDetector to specify whether TDC or ADC for module %d.", i);   
 	}
       }
       if(!d->IsADC() && !d->IsTDC()) {
@@ -619,20 +619,20 @@ Int_t SBSGenericDetector::ReadDatabase( const TDatime& date )
     DeleteContainer(fRefElements);
     fRefElements.resize(fNRefElem);
     for (Int_t nr=0;nr<fNRefElem;nr++) {
-      SBSElement *el = MakeElement(0,0,0,nr,0,0,nr);
+      MOLLERElement *el = MakeElement(0,0,0,nr,0,0,nr);
       if (RefMode[nr] ==0) {
 	el->SetTDC(reftdc_offset[nr],reftdc_cal[nr],reftdc_GoodTimeCut[nr]);
       } else {
-            if( fModeADC == SBSModeADC::kWaveform ) {
+            if( fModeADC == MOLLERModeADC::kWaveform ) {
               el->SetWaveform(refadc_ped[nr],refadc_gain[nr],refadc_conv[nr],refadc_GoodTimeCut[nr]);
-	      SBSData::Waveform *wave = el->Waveform();
+	      MOLLERData::Waveform *wave = el->Waveform();
               wave->SetWaveformParam(refadc_thres[nr],refadc_FixThresBin[nr],refadc_NSB[nr],refadc_NSA[nr],refadc_NPedBin[nr]);
 	      wave->SetAmpCal(refadc_AmpToIntRatio[nr]*refadc_gain[nr]);
 	      wave->SetTrigCal(1.);
             } else {
               el->SetADC(refadc_ped[nr],refadc_gain[nr]);
-	      if( fModeADC == SBSModeADC::kADC ) {
-		SBSData::ADC *fadc=el->ADC();
+	      if( fModeADC == MOLLERModeADC::kADC ) {
+		MOLLERData::ADC *fadc=el->ADC();
 		fadc->SetADCParam(refadc_conv[nr],refadc_NSB[nr],refadc_NSA[nr],refadc_NPedBin[nr],refadc_GoodTimeCut[nr]);
 		fadc->SetAmpCal(refadc_AmpToIntRatio[nr]*refadc_gain[nr]);
 	        fadc->SetTrigCal(1.);
@@ -834,19 +834,19 @@ Int_t SBSGenericDetector::ReadDatabase( const TDatime& date )
           x = xyz[0] - r*dxyz[0];
           y = xyz[1] - c*dxyz[1];
           z = xyz[2] - l*dxyz[2];
-          SBSElement *e = MakeElement(x,y,z,rr,cc,ll,k+fChanMapStart);
+          MOLLERElement *e = MakeElement(x,y,z,rr,cc,ll,k+fChanMapStart);
           if( WithADC() ) {
-            if( fModeADC == SBSModeADC::kWaveform ) {
+            if( fModeADC == MOLLERModeADC::kWaveform ) {
               e->SetWaveform(adc_ped[k],adc_gain[k],adc_conv[k],adc_GoodTimeCut[k]);
-	      SBSData::Waveform *wave = e->Waveform();
+	      MOLLERData::Waveform *wave = e->Waveform();
               wave->SetWaveformParam(adc_thres[k],adc_FixThresBin[k],adc_NSB[k],adc_NSA[k],adc_NPedBin[k]);
 	      wave->SetAmpCal(adc_AmpToIntRatio[k]*adc_gain[k]);
 	      wave->SetTrigCal(1.);
 	      wave->SetTimeOffset(adc_timeoffset[k]);
             } else {
               e->SetADC(adc_ped[k],adc_gain[k]);
-	      if( fModeADC == SBSModeADC::kADC ) {
-		SBSData::ADC *fadc=e->ADC();
+	      if( fModeADC == MOLLERModeADC::kADC ) {
+		MOLLERData::ADC *fadc=e->ADC();
 		fadc->SetADCParam(adc_conv[k],adc_NSB[k],adc_NSA[k],adc_NPedBin[k],adc_GoodTimeCut[k]);
 	        fadc->SetAmpCal(adc_AmpToIntRatio[k]*adc_gain[k]);
 		fadc->SetTrigCal(1.);
@@ -871,7 +871,7 @@ Int_t SBSGenericDetector::ReadDatabase( const TDatime& date )
 }
 
 //_____________________________________________________________________________
-Int_t SBSGenericDetector::DefineVariables( EMode mode )
+Int_t MOLLERGenericDetector::DefineVariables( EMode mode )
 {
   // Initialize global variables
 
@@ -907,7 +907,7 @@ Int_t SBSGenericDetector::DefineVariables( EMode mode )
     ve.push_back({ "Ref.tdcelemID", "Ref Time Calibrated TDC value", "fRefGood.TDCelemID" });
     ve.push_back({ "Ref.tdc", "Ref Time Calibrated TDC value", "fRefGood.t" });
     ve.push_back({ "Ref.tdc_mult", "Ref Time # hits in channel", "fRefGood.t_mult" });
-    if(fModeTDC != SBSModeTDC::kTDCSimple) {
+    if(fModeTDC != MOLLERModeTDC::kTDCSimple) {
       // We have trailing edge and Time-Over-Threshold info to store
       ve.push_back({"Ref.tdc_te","Ref Time Calibrated TDC trailing info","fRefGood.t_te"});
       ve.push_back({"Ref.tdc_tot","Ref Time  Time Over Threshold","fRefGood.t_ToT"});
@@ -915,7 +915,7 @@ Int_t SBSGenericDetector::DefineVariables( EMode mode )
     if(fStoreRawHits) {
       ve.push_back({ "Ref.hits.TDCelemID",   "Ref Time ALL index",  "fRefRaw.TDCelemID" });
       ve.push_back({ "Ref.hits.t",   "Ref Time All TDC leading edge times",  "fRefRaw.t" });
-      if(fModeTDC != SBSModeTDC::kTDCSimple) {
+      if(fModeTDC != MOLLERModeTDC::kTDCSimple) {
         ve.push_back({ "Ref.hits.t_te",   "Ref Time All TDC trailing edge times",  "fRefRaw.t_te" });
         ve.push_back({ "Ref.hits.t_tot",  "Ref Time All TDC Time-over-threshold",  "fRefRaw.t_ToT" });
       }
@@ -930,7 +930,7 @@ Int_t SBSGenericDetector::DefineVariables( EMode mode )
      ve.push_back( {"Ref.a_mult","Ref ADC # hits in channel", "fRefGood.a_mult"} );
     ve.push_back( {"Ref.a_p","Ref ADC integral - ped", "fRefGood.a_p"} );
     ve.push_back( {"Ref.a_c","Ref (ADC integral - ped)*gain", "fRefGood.a_c"} );
-    if(fModeADC != SBSModeADC::kADCSimple) {
+    if(fModeADC != MOLLERModeADC::kADCSimple) {
       ve.push_back( {"Ref.a_amp","Ref ADC pulse amplitude", "fRefGood.a_amp"} );
       ve.push_back( {"Ref.a_amp_p","Ref ADC pulse amplitude -ped", "fRefGood.a_amp_p"} );
       ve.push_back( {"Ref.a_amp_c","(Ref ADC pulse amplitude -ped)*gain*AmpToIntRatio", "fRefGood.a_amp_c"} );
@@ -955,7 +955,7 @@ Int_t SBSGenericDetector::DefineVariables( EMode mode )
      ve.push_back( {"a_mult","ADC # hits in channel", "fGood.a_mult"} );
     ve.push_back( {"a_p","ADC integral - ped", "fGood.a_p"} );
     ve.push_back( {"a_c","(ADC integral - ped)*gain", "fGood.a_c"} );
-    if(fModeADC != SBSModeADC::kADCSimple) {
+    if(fModeADC != MOLLERModeADC::kADCSimple) {
       ve.push_back( {"a_amp","ADC pulse amplitude", "fGood.a_amp"} );
       ve.push_back( {"a_amp_p","ADC pulse amplitude -ped", "fGood.a_amp_p"} );
       ve.push_back( {"a_amp_c","(ADC pulse amplitude -ped)*gain*AmpToIntRatio", "fGood.a_amp_p"} );
@@ -978,7 +978,7 @@ Int_t SBSGenericDetector::DefineVariables( EMode mode )
     ve.push_back({ "tdclayer", "Layer for block in data vectors",  "fGood.TDClayer" }),
     ve.push_back({ "tdc", "Calibrated TDC value", "fGood.t" });
     ve.push_back({ "tdc_mult", "TDC # of hits per channel", "fGood.t_mult" });
-    if(fModeTDC != SBSModeTDC::kTDCSimple) {
+    if(fModeTDC != MOLLERModeTDC::kTDCSimple) {
       // We have trailing edge and Time-Over-Threshold info to store
       ve.push_back({"tdc_te","Calibrated TDC trailing info","fGood.t_te"});
       ve.push_back({"tdc_tot","Time Over Threshold","fGood.t_ToT"});
@@ -986,7 +986,7 @@ Int_t SBSGenericDetector::DefineVariables( EMode mode )
     if(fStoreRawHits) {
       ve.push_back({ "hits.TDCelemID",   "All TDC Element ID",  "fRaw.TDCelemID" });
       ve.push_back({ "hits.t",   "All TDC leading edge times",  "fRaw.t" });
-      if(fModeTDC != SBSModeTDC::kTDCSimple) {
+      if(fModeTDC != MOLLERModeTDC::kTDCSimple) {
         ve.push_back({ "hits.t_te",   "All TDC trailing edge times",  "fRaw.t_te" });
         ve.push_back({ "hits.t_tot",  "All TDC Time-over-threshold",  "fRaw.t_ToT" });
       }
@@ -994,7 +994,7 @@ Int_t SBSGenericDetector::DefineVariables( EMode mode )
   }
 
   // Are we using multi-valued ADCs? Then define the samples variables
-  if(fModeADC == SBSModeADC::kWaveform && fStoreRawHits) {
+  if(fModeADC == MOLLERModeADC::kWaveform && fStoreRawHits) {
     ve.push_back({ "samps_idx", "Index in samples vector for given row-col module",
         "fGood.sidx" });
     ve.push_back({ "nsamps" , "Number of samples for given row-col",
@@ -1016,13 +1016,13 @@ Int_t SBSGenericDetector::DefineVariables( EMode mode )
 }
 
 //_____________________________________________________________________________
-Int_t SBSGenericDetector::Decode( const THaEvData& evdata )
+Int_t MOLLERGenericDetector::Decode( const THaEvData& evdata )
 {
   // Decode data
 
   //static const char* const here = "Decode()";
   // Loop over modules for the reference time
-  SBSElement *blk = nullptr;
+  MOLLERElement *blk = nullptr;
   if (!fDisableRefADC || !fDisableRefTDC) {
   for( UInt_t imod = 0; imod < fDetMap->GetSize(); imod++ ) {
     if (!fModuleRefTimeFlag[imod]) continue;
@@ -1063,28 +1063,28 @@ Int_t SBSGenericDetector::Decode( const THaEvData& evdata )
   }
   //
   for(Int_t k = 0; k < fNelem; k++) {
-    SBSElement *tblk = fElements[k];  
+    MOLLERElement *tblk = fElements[k];  
     FindGoodHit(tblk);
   }
   //
   return fNhits;
 }
 ////
-Int_t SBSGenericDetector::DecodeADC( const THaEvData& evdata,
-    SBSElement *blk, THaDetMap::Module *d, Int_t chan,Bool_t IsRef)
+Int_t MOLLERGenericDetector::DecodeADC( const THaEvData& evdata,
+    MOLLERElement *blk, THaDetMap::Module *d, Int_t chan,Bool_t IsRef)
 {
   UInt_t nhit = evdata.GetNumHits(d->crate, d->slot, chan);
   if(nhit == 0  || !WithADC() || !blk)    return 0;
   // If not a reference element then determine the reference time to use
   Double_t reftime=0; 
   if (!IsRef && !fDisableRefADC && d->refindex>=0) {
-     SBSElement *refblk = fRefElements[d->refindex];
-     if(fModeADC == SBSModeADC::kWaveform ) {
-        SBSData::Waveform *wave = refblk->Waveform();
+     MOLLERElement *refblk = fRefElements[d->refindex];
+     if(fModeADC == MOLLERModeADC::kWaveform ) {
+        MOLLERData::Waveform *wave = refblk->Waveform();
 	//Now only one pulse found per sample 	
        reftime = wave->GetTime().val;
        wave->SetGoodHit(0);
-    } else if (fModeADC == SBSModeADC::kADC && refblk->ADC()->HasData()) {
+    } else if (fModeADC == MOLLERModeADC::kADC && refblk->ADC()->HasData()) {
        Int_t nhits = refblk->ADC()->GetNHits(); 
        Double_t MinDiff = 10000.;
        Int_t HitIndex = 0;
@@ -1099,11 +1099,11 @@ Int_t SBSGenericDetector::DecodeADC( const THaEvData& evdata,
       refblk->ADC()->SetGoodHit(HitIndex);       
      }
   }
-  if(fModeADC != SBSModeADC::kWaveform) {
+  if(fModeADC != MOLLERModeADC::kWaveform) {
     // Process all hits in this channel
-    if(fModeADC == SBSModeADC::kADCSimple) { // Single ADC value 
+    if(fModeADC == MOLLERModeADC::kADCSimple) { // Single ADC value 
         blk->ADC()->Process( evdata.GetData(d->crate, d->slot, chan, 0));
-    } else if (fModeADC == SBSModeADC::kADC) { // mode==7 in FADC250
+    } else if (fModeADC == MOLLERModeADC::kADC) { // mode==7 in FADC250
       // here integral, time, peak, and pedestal are provided
       Double_t integral,time,peak,pedestal;
       Int_t lnhit = nhit/4; // Real number of hits
@@ -1123,22 +1123,22 @@ Int_t SBSGenericDetector::DecodeADC( const THaEvData& evdata,
     }
     blk->Waveform()->Process(samples);
     samples.clear();
-    SBSData::Waveform *wave = blk->Waveform();
+    MOLLERData::Waveform *wave = blk->Waveform();
     wave->SetValTime(wave->GetTime().val- reftime);
   }
   return nhit;
 }
 
 
-Int_t SBSGenericDetector::DecodeTDC( const THaEvData& evdata,
-    SBSElement *blk, THaDetMap::Module *d, Int_t chan,Bool_t IsRef)
+Int_t MOLLERGenericDetector::DecodeTDC( const THaEvData& evdata,
+    MOLLERElement *blk, THaDetMap::Module *d, Int_t chan,Bool_t IsRef)
 {
   //
   Int_t nhit = evdata.GetNumHits(d->crate, d->slot, chan);
   Double_t reftime  = 0;
   // For VETROC the TDC hits are not in time order. Need to arrange in time order.
   std::vector<TDCHits> tdchit;
-  if(fModeTDC == SBSModeTDC::kTDC )  {
+  if(fModeTDC == MOLLERModeTDC::kTDC )  {
     for(Int_t ihit = 0; ihit < nhit; ihit++) {
       TDCHits c1 = {evdata.GetRawData(d->crate, d->slot, chan, ihit),evdata.GetData(d->crate, d->slot, chan, ihit)};
       tdchit.push_back(c1);
@@ -1147,7 +1147,7 @@ Int_t SBSGenericDetector::DecodeTDC( const THaEvData& evdata,
   }
   //
   if(!IsRef && !fDisableRefTDC && d->refindex>=0) {
-     SBSElement *refblk = fRefElements[d->refindex];
+     MOLLERElement *refblk = fRefElements[d->refindex];
     if(!refblk->TDC()->HasData()) {
 
       //      std::cout << "Error reference TDC channel has no hits! refindex = " << d->refindex << " num ref tot = " << fNRefhits << " size = " << fRefElements.size() << std::endl;
@@ -1182,7 +1182,7 @@ Int_t SBSGenericDetector::DecodeTDC( const THaEvData& evdata,
   Int_t edge = 0;
   Int_t elemID=blk->GetID();
   for(Int_t ihit = 0; ihit < nhit; ihit++) {
-        if(fModeTDC == SBSModeTDC::kTDCSimple) {
+        if(fModeTDC == MOLLERModeTDC::kTDCSimple) {
 	  UInt_t rawdata = evdata.GetData(d->crate, d->slot, chan, ihit);
 	   if (!IsRef && d->GetModel() == 6401) { // F1 TDC
 	     if ( abs(rawdata-reftime) > fF1_TimeWindow) {
@@ -1203,7 +1203,7 @@ Int_t SBSGenericDetector::DecodeTDC( const THaEvData& evdata,
           edge = tdchit[ihit].edge;
       //           std::cout << ihit << " " << evdata.GetData(d->crate, d->slot, chan, ihit) - reftime << " " << edge << std::endl;
           if (edge ==1 && ihit ==0) continue; // skip first hit if trailing edge
-          if (fModeTDC != SBSModeTDC::kTDCSimple && edge ==0 && ihit == nhit-1)  continue; // skip last hit if leading edge
+          if (fModeTDC != MOLLERModeTDC::kTDCSimple && edge ==0 && ihit == nhit-1)  continue; // skip last hit if leading edge
           blk->TDC()->Process(elemID,tdchit[ihit].rawtime - reftime, edge);
        }
    }
@@ -1212,7 +1212,7 @@ Int_t SBSGenericDetector::DecodeTDC( const THaEvData& evdata,
 }
 
 //_____________________________________________________________________________
-void SBSGenericDetector::Clear( Option_t* opt )
+void MOLLERGenericDetector::Clear( Option_t* opt )
 {
   // Call our version in case sub-classes have re-implemented it
 
@@ -1233,13 +1233,13 @@ void SBSGenericDetector::Clear( Option_t* opt )
   }
 }
 
-Int_t SBSGenericDetector::CoarseProcess(TClonesArray& )// tracks)
+Int_t MOLLERGenericDetector::CoarseProcess(TClonesArray& )// tracks)
 {
   // Make sure we haven't already been called in this event
   if(fCoarseProcessed) return 0;
 
   // Pack simple data for output to the tree, and call CoarseProcess on all elements
-  SBSElement *blk = 0;
+  MOLLERElement *blk = 0;
   size_t nsamples;
   size_t idx;
   // Reference time
@@ -1252,16 +1252,16 @@ Int_t SBSGenericDetector::CoarseProcess(TClonesArray& )// tracks)
     fRefGood.TDCcol.push_back(blk->GetCol());
     fRefGood.TDClayer.push_back(blk->GetLayer());
     fRefGood.TDCelemID.push_back(blk->GetID());
-        const SBSData::TDCHit &hit = blk->TDC()->GetGoodHit();
+        const MOLLERData::TDCHit &hit = blk->TDC()->GetGoodHit();
 	Double_t tempval=hit.le.val;
-        if(fModeTDC == SBSModeTDC::kTDCSimple) { // need to recalculate for F1 data
+        if(fModeTDC == MOLLERModeTDC::kTDCSimple) { // need to recalculate for F1 data
 	  Double_t cal=blk->TDC()->GetCal();
 	  Double_t offset=blk->TDC()->GetOffset();
 	  tempval= (hit.le.raw-hit.TrigTime-offset)*cal;
 	}
         fRefGood.t.push_back(tempval);
         fRefGood.t_mult.push_back(blk->TDC()->GetNHits());
-        if(fModeTDC == SBSModeTDC::kTDC) { // has trailing info
+        if(fModeTDC == MOLLERModeTDC::kTDC) { // has trailing info
           fRefGood.t_te.push_back(hit.te.val);
           fRefGood.t_ToT.push_back(hit.ToT.val);
         }
@@ -1272,23 +1272,23 @@ Int_t SBSGenericDetector::CoarseProcess(TClonesArray& )// tracks)
     fRefGood.TDCelemID.push_back(blk->GetID());
         fRefGood.t_mult.push_back(0);
         fRefGood.t.push_back(kBig);
-        if(fModeTDC == SBSModeTDC::kTDC) {
+        if(fModeTDC == MOLLERModeTDC::kTDC) {
           fRefGood.t_te.push_back(kBig);
           fRefGood.t_ToT.push_back(kBig);
         }
       }
         if(fStoreRawHits) {
-            const std::vector<SBSData::TDCHit> &hits = blk->TDC()->GetAllHits();
+            const std::vector<MOLLERData::TDCHit> &hits = blk->TDC()->GetAllHits();
             for( const auto &hit : hits) {
               fRefRaw.TDCelemID.push_back(hit.elemID);
 	      Double_t tempval=hit.le.val;
-              if(fModeTDC == SBSModeTDC::kTDCSimple) { // need to recalculate for F1 data
+              if(fModeTDC == MOLLERModeTDC::kTDCSimple) { // need to recalculate for F1 data
 	         Double_t cal=blk->TDC()->GetCal();
 	         Double_t offset=blk->TDC()->GetOffset();
 	         tempval= (hit.le.raw-hit.TrigTime-offset)*cal;
 	      }
 	         fRefRaw.t.push_back(tempval);
-               if(fModeTDC == SBSModeTDC::kTDC) { // has trailing info
+               if(fModeTDC == MOLLERModeTDC::kTDC) { // has trailing info
               fRefRaw.t_te.push_back(hit.te.val);
               fRefRaw.t_ToT.push_back(hit.ToT.val);
 	       }
@@ -1298,7 +1298,7 @@ Int_t SBSGenericDetector::CoarseProcess(TClonesArray& )// tracks)
     //
     //   if(WithADC() && !fDisableRefADC ) {
     if( WithADC() && blk->HasADCData() ){
-      if (fModeADC == SBSModeADC::kADC && blk->ADC()->HasData() ) {
+      if (fModeADC == MOLLERModeADC::kADC && blk->ADC()->HasData() ) {
           if(blk->ADC()->HasData() && blk->ADC()->GetGoodHitIndex() >=0){
              fRefGood.ADCrow.push_back(blk->GetRow());
              fRefGood.ADCcol.push_back(blk->GetCol());
@@ -1306,16 +1306,16 @@ Int_t SBSGenericDetector::CoarseProcess(TClonesArray& )// tracks)
              fRefGood.ADCelemID.push_back(blk->GetID());
            Double_t ped=blk->ADC()->GetPed();
           fRefGood.ped.push_back(ped);
-          const SBSData::PulseADCData &hit = blk->ADC()->GetGoodHit();
+          const MOLLERData::PulseADCData &hit = blk->ADC()->GetGoodHit();
           fRefGood.a.push_back(hit.integral.raw);
           fRefGood.a_mult.push_back(blk->ADC()->GetNHits());
-          if (fModeADC == SBSModeADC::kADCSimple) fRefGood.a_p.push_back(hit.integral.raw-ped);
-	  if (fModeADC == SBSModeADC::kADC) {
+          if (fModeADC == MOLLERModeADC::kADCSimple) fRefGood.a_p.push_back(hit.integral.raw-ped);
+	  if (fModeADC == MOLLERModeADC::kADC) {
 	    Double_t gain=blk->ADC()->GetGain();
 	      fRefGood.a_p.push_back(hit.integral.val/gain); // ped subtracted with Gain factor
 	  }
           fRefGood.a_c.push_back(hit.integral.val);
-          if(fModeADC == SBSModeADC::kADC) { // Amplitude and time are also available
+          if(fModeADC == MOLLERModeADC::kADC) { // Amplitude and time are also available
             fRefGood.a_amp.push_back(hit.amplitude.raw);
 	    Double_t again=blk->ADC()->GetAmpCal();	      
 	    Double_t trigcal=blk->ADC()->GetTrigCal();	      
@@ -1335,7 +1335,7 @@ Int_t SBSGenericDetector::CoarseProcess(TClonesArray& )// tracks)
           fRefGood.a_mult.push_back(0);
           fRefGood.a_p.push_back(0.);
           fRefGood.a_c.push_back(0.);
-          if(fModeADC == SBSModeADC::kADC) { // Amplitude and time are also available
+          if(fModeADC == MOLLERModeADC::kADC) { // Amplitude and time are also available
             fRefGood.a_amp.push_back(0.);
             fRefGood.a_amp_p.push_back(0.);
             fRefGood.a_amp_c.push_back(0.);
@@ -1347,7 +1347,7 @@ Int_t SBSGenericDetector::CoarseProcess(TClonesArray& )// tracks)
 	  }
           // Now store all the hits if specified the by user
           if(fStoreRawHits) {
-            const std::vector<SBSData::PulseADCData> &hits = blk->ADC()->GetAllHits();
+            const std::vector<MOLLERData::PulseADCData> &hits = blk->ADC()->GetAllHits();
             for( const auto &hit : hits) {
               fRefRaw.ADCelemID.push_back(blk->GetID());
               fRefRaw.a.push_back(hit.integral.val);
@@ -1355,9 +1355,9 @@ Int_t SBSGenericDetector::CoarseProcess(TClonesArray& )// tracks)
               fRefRaw.a_time.push_back(hit.time.val);
              }
           }
-	  //    } else if  (fModeADC == SBSModeADC::kWaveform ){ // Waveform mode
-      } else if( fModeADC == SBSModeADC::kWaveform && blk->Waveform()->HasData()){
-        SBSData::Waveform *wave = blk->Waveform();
+	  //    } else if  (fModeADC == MOLLERModeADC::kWaveform ){ // Waveform mode
+      } else if( fModeADC == MOLLERModeADC::kWaveform && blk->Waveform()->HasData()){
+        MOLLERData::Waveform *wave = blk->Waveform();
 	if(wave->HasData()) {		
           if(fStoreRawHits) {
            std::vector<Double_t> &s_r =wave->GetDataRaw();
@@ -1378,7 +1378,7 @@ Int_t SBSGenericDetector::CoarseProcess(TClonesArray& )// tracks)
              fRefGood.ADClayer.push_back(blk->GetLayer());
              fRefGood.ADCelemID.push_back(blk->GetID());
 
-	     //std::cout << "SBSCalorimeter, " << GetName() << " " << blk->GetID() << " " << blk->GetRow() << " " << blk->GetCol() << " " << blk->GetX() << " " << blk->GetY() << std::endl;
+	     //std::cout << "MOLLERCalorimeter, " << GetName() << " " << blk->GetID() << " " << blk->GetRow() << " " << blk->GetCol() << " " << blk->GetX() << " " << blk->GetY() << std::endl;
 	 
         fRefGood.ped.push_back(wave->GetPed());
 	fRefGood.a_mult.push_back(0);
@@ -1437,14 +1437,14 @@ Int_t SBSGenericDetector::CoarseProcess(TClonesArray& )// tracks)
     if(WithTDC() ) {
       if(blk->TDC()->HasData() && blk->TDC()->GetGoodHitIndex() != -1) {
         fNGoodTDChits++;
-        const SBSData::TDCHit &hit = blk->TDC()->GetGoodHit();
+        const MOLLERData::TDCHit &hit = blk->TDC()->GetGoodHit();
         fGood.TDCrow.push_back(blk->GetRow());
         fGood.TDCcol.push_back(blk->GetCol());
         fGood.TDClayer.push_back(blk->GetLayer());
         fGood.TDCelemID.push_back(blk->GetID());
         fGood.t.push_back(hit.le.val);
         fGood.t_mult.push_back(blk->TDC()->GetNHits());
-        if(fModeTDC == SBSModeTDC::kTDC) { // has trailing info
+        if(fModeTDC == MOLLERModeTDC::kTDC) { // has trailing info
           fGood.t_te.push_back(hit.te.val);
           fGood.t_ToT.push_back(hit.ToT.val);
         }
@@ -1455,17 +1455,17 @@ Int_t SBSGenericDetector::CoarseProcess(TClonesArray& )// tracks)
         fGood.TDCelemID.push_back(blk->GetID());
          fGood.t.push_back(kBig);
         fGood.t_mult.push_back(0);
-        if(fModeTDC == SBSModeTDC::kTDC) {
+        if(fModeTDC == MOLLERModeTDC::kTDC) {
           fGood.t_te.push_back(kBig);
           fGood.t_ToT.push_back(kBig);
         }
       }
       if(fStoreRawHits) {
-            const std::vector<SBSData::TDCHit> &hits = blk->TDC()->GetAllHits();
+            const std::vector<MOLLERData::TDCHit> &hits = blk->TDC()->GetAllHits();
             for( const auto &hit : hits) {
               fRaw.TDCelemID.push_back(hit.elemID);
               fRaw.t.push_back(hit.le.val);
-               if(fModeTDC == SBSModeTDC::kTDC) { // has trailing info
+               if(fModeTDC == MOLLERModeTDC::kTDC) { // has trailing info
               fRaw.t_te.push_back(hit.te.val);
               fRaw.t_ToT.push_back(hit.ToT.val);
 	       }
@@ -1474,7 +1474,7 @@ Int_t SBSGenericDetector::CoarseProcess(TClonesArray& )// tracks)
     }
 
     if(WithADC()) {
-      if(fModeADC != SBSModeADC::kWaveform) {
+      if(fModeADC != MOLLERModeADC::kWaveform) {
           if(blk->ADC()->HasData() && blk->ADC()->GetGoodHitIndex() >=0){
              fNGoodADChits++;
              fGood.ADCrow.push_back(blk->GetRow());
@@ -1483,16 +1483,16 @@ Int_t SBSGenericDetector::CoarseProcess(TClonesArray& )// tracks)
              fGood.ADCelemID.push_back(blk->GetID());
            Double_t ped=blk->ADC()->GetPed();
           fGood.ped.push_back(ped);
-          const SBSData::PulseADCData &hit = blk->ADC()->GetGoodHit();
+          const MOLLERData::PulseADCData &hit = blk->ADC()->GetGoodHit();
           fGood.a.push_back(hit.integral.raw);
           fGood.a_mult.push_back(blk->ADC()->GetNHits());
-          if (fModeADC == SBSModeADC::kADCSimple) fGood.a_p.push_back(hit.integral.raw-ped);
-	  if (fModeADC == SBSModeADC::kADC) {
+          if (fModeADC == MOLLERModeADC::kADCSimple) fGood.a_p.push_back(hit.integral.raw-ped);
+	  if (fModeADC == MOLLERModeADC::kADC) {
 	    Double_t gain=blk->ADC()->GetGain();
 	      fGood.a_p.push_back(hit.integral.val/gain); // ped subtracted with Gain factor
 	  }
           fGood.a_c.push_back(hit.integral.val);
-          if(fModeADC == SBSModeADC::kADC) { // Amplitude and time are also available
+          if(fModeADC == MOLLERModeADC::kADC) { // Amplitude and time are also available
             fGood.a_amp.push_back(hit.amplitude.raw);
 	    Double_t again=blk->ADC()->GetAmpCal();	      
 	    Double_t trigcal=blk->ADC()->GetTrigCal();	      
@@ -1512,7 +1512,7 @@ Int_t SBSGenericDetector::CoarseProcess(TClonesArray& )// tracks)
           fGood.a_mult.push_back(0);
           fGood.a_p.push_back(0.);
           fGood.a_c.push_back(0.);
-          if(fModeADC == SBSModeADC::kADC) { // Amplitude and time are also available
+          if(fModeADC == MOLLERModeADC::kADC) { // Amplitude and time are also available
             fGood.a_amp.push_back(0.);
             fGood.a_amp_p.push_back(0.);
             fGood.a_amp_c.push_back(0.);
@@ -1524,7 +1524,7 @@ Int_t SBSGenericDetector::CoarseProcess(TClonesArray& )// tracks)
 	  }
           // Now store all the hits if specified the by user
           if(fStoreRawHits) {
-            const std::vector<SBSData::PulseADCData> &hits = blk->ADC()->GetAllHits();
+            const std::vector<MOLLERData::PulseADCData> &hits = blk->ADC()->GetAllHits();
             for( const auto &hit : hits) {
               fRaw.a.push_back(hit.integral.val);
               fRaw.a_amp.push_back(hit.amplitude.val);
@@ -1532,7 +1532,7 @@ Int_t SBSGenericDetector::CoarseProcess(TClonesArray& )// tracks)
              }
           }
       } else { // Waveform mode
-        SBSData::Waveform *wave = blk->Waveform();
+        MOLLERData::Waveform *wave = blk->Waveform();
 	if(wave->HasData()) {		
           if(fStoreRawHits) {
            std::vector<Double_t> &s_r =wave->GetDataRaw();
@@ -1554,7 +1554,7 @@ Int_t SBSGenericDetector::CoarseProcess(TClonesArray& )// tracks)
              fGood.ADClayer.push_back(blk->GetLayer());
              fGood.ADCelemID.push_back(blk->GetID());
 
-	     //std::cout << "SBSCalorimeter, " << GetName() << " " << blk->GetID() << " " << blk->GetRow() << " " << blk->GetCol() << " " << blk->GetX() << " " << blk->GetY() << std::endl;
+	     //std::cout << "MOLLERCalorimeter, " << GetName() << " " << blk->GetID() << " " << blk->GetRow() << " " << blk->GetCol() << " " << blk->GetX() << " " << blk->GetY() << std::endl;
 	 
         fGood.ped.push_back(wave->GetPed());
 	fGood.a_mult.push_back(0);
@@ -1599,7 +1599,7 @@ Int_t SBSGenericDetector::CoarseProcess(TClonesArray& )// tracks)
 }
 
 //
-Int_t SBSGenericDetector::FindGoodHit(SBSElement *blk)
+Int_t MOLLERGenericDetector::FindGoodHit(MOLLERElement *blk)
 {
   Int_t GoodHit=0;  
   if (WithTDC()&& blk->TDC()->HasData()) {
@@ -1617,13 +1617,13 @@ Int_t SBSGenericDetector::FindGoodHit(SBSElement *blk)
       GoodHit=1;
   }
   if (WithADC()) {		
-    if (fModeADC == SBSModeADC::kADCSimple) {
+    if (fModeADC == MOLLERModeADC::kADCSimple) {
            blk->ADC()->SetGoodHit(-1);
 	   if (blk->ADC()->HasData() )   {
 	     blk->ADC()->SetGoodHit(0);
             GoodHit=1;
 	   }
-    } else if (fModeADC == SBSModeADC::kADC )  {
+    } else if (fModeADC == MOLLERModeADC::kADC )  {
            blk->ADC()->SetGoodHit(-1);
 	   if (blk->ADC()->HasData() )   {
        Int_t nhits = blk->ADC()->GetNHits(); 
@@ -1641,8 +1641,8 @@ Int_t SBSGenericDetector::FindGoodHit(SBSElement *blk)
       GoodHit=1;
 	   }
 
-    } else if (fModeADC == SBSModeADC::kWaveform) {
-         SBSData::Waveform *wave = blk->Waveform();
+    } else if (fModeADC == MOLLERModeADC::kWaveform) {
+         MOLLERData::Waveform *wave = blk->Waveform();
          wave->SetGoodHit(-1);
 	 if (wave->HasData())  {
          Int_t HitIndex = -1;
@@ -1656,14 +1656,14 @@ Int_t SBSGenericDetector::FindGoodHit(SBSElement *blk)
 }
 
 //_____________________________________________________________________________
-Int_t SBSGenericDetector::FineProcess(TClonesArray&)//tracks)
+Int_t MOLLERGenericDetector::FineProcess(TClonesArray&)//tracks)
 {
   fFineProcessed = 1;
   return 0;
 }
 
 //_____________________________________________________________________________
-void SBSGenericDetector::ClearOutputVariables()
+void MOLLERGenericDetector::ClearOutputVariables()
 {
   fGood.clear();
   fRaw.clear();
@@ -1673,9 +1673,9 @@ void SBSGenericDetector::ClearOutputVariables()
 
 
 ///////////////////////////////////////////////////////////////////////////////
-/// SBSGenericDetector constructor
-SBSElement* SBSGenericDetector::MakeElement(Double_t x, Double_t y, Double_t z,
+/// MOLLERGenericDetector constructor
+MOLLERElement* MOLLERGenericDetector::MakeElement(Double_t x, Double_t y, Double_t z,
     Int_t row, Int_t col, Int_t layer, Int_t id)
 {
-  return new SBSElement(x,y,z,row,col,layer, id);
+  return new MOLLERElement(x,y,z,row,col,layer, id);
 }

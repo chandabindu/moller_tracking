@@ -1,15 +1,15 @@
-#include "SBSData.h"
+#include "MOLLERData.h"
 #include "TMath.h"
 #include <iostream>
-#define SBS_ADC_MODE_SINGLE 0 //< Simple ADC with only integral
-#define SBS_ADC_MODE_MULTI  1 //< FADC 250 mode 7
+#define MOLLER_ADC_MODE_SINGLE 0 //< Simple ADC with only integral
+#define MOLLER_ADC_MODE_MULTI  1 //< FADC 250 mode 7
 
-namespace SBSData {
+namespace MOLLERData {
 
   /////////////////////////////////////////////////////////////////////////////
   // ADC data functions
   ADC::ADC(Double_t ped, Double_t gain, Double_t tcal) :
-      fHasData(false), fMode(SBS_ADC_MODE_SINGLE)
+      fHasData(false), fMode(MOLLER_ADC_MODE_SINGLE)
   {
     SetPed(ped);
     SetGain(gain);
@@ -22,7 +22,7 @@ namespace SBSData {
     SingleData integral = { val, (val-fADC.ped)*fADC.cal };
     fADC.hits.push_back({integral,zero,zero});
     fHasData = true;
-    fMode = SBS_ADC_MODE_SINGLE; //< Mode gets set to simple if this function is called
+    fMode = MOLLER_ADC_MODE_SINGLE; //< Mode gets set to simple if this function is called
   }
 
   void ADC::Process(Double_t integral, Double_t time, Double_t amp, Double_t ped) {
@@ -41,7 +41,7 @@ namespace SBSData {
     fADC.hits.push_back({t_integral,t_time,t_amp } );
     SetPed(PedVal);
     fHasData = true;
-    fMode = SBS_ADC_MODE_MULTI; //< Mode gets set to multi if this function is called
+    fMode = MOLLER_ADC_MODE_MULTI; //< Mode gets set to multi if this function is called
   }
 
   void ADC::Clear()
@@ -241,4 +241,4 @@ namespace SBSData {
     fHasData = false;
   }
 
-}; // end SBSData
+}; // end MOLLERData
